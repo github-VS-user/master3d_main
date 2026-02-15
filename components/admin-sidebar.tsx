@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { Package, ShoppingBag, LogOut, LayoutDashboard } from "lucide-react"
+import { Package, ShoppingBag, LogOut, LayoutDashboard, X } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 
@@ -13,7 +13,7 @@ const navItems = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
 ]
 
-export function AdminSidebar({ userEmail }: { userEmail: string }) {
+export function AdminSidebar({ userEmail, isOpen, onClose }: { userEmail: string; isOpen: boolean; onClose: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -23,10 +23,36 @@ export function AdminSidebar({ userEmail }: { userEmail: string }) {
     router.push("/admin/login")
   }
 
+  const handleLinkClick = () => {
+    onClose()
+  }
+
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-card">
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <aside className={cn(
+        "fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col border-r border-border bg-card transition-transform duration-300 lg:static lg:z-0 lg:translate-x-0",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
       {/* Logo Header */}
       <div className="relative border-b border-border bg-gradient-to-br from-primary/5 to-transparent px-5 py-6">
+        {/* Mobile close button */}
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:hidden"
+          aria-label="Close menu"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        
         <div className="flex flex-col items-center gap-3">
           <div className="relative overflow-hidden rounded-lg shadow-md">
             <Image
@@ -58,6 +84,7 @@ export function AdminSidebar({ userEmail }: { userEmail: string }) {
             <Link
               key={item.href}
               href={item.href}
+              onClick={handleLinkClick}
               className={cn(
                 "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                 isActive
