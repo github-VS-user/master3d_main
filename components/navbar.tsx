@@ -10,6 +10,8 @@ export function Navbar() {
   const { count } = useCart()
   const [mobileOpen, setMobileOpen] = useState(false)
 
+  console.log("[v0] Navbar rendering - logo path: /images/master3d_logo.jpg")
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-8">

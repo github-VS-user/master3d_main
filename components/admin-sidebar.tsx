@@ -17,6 +17,8 @@ export function AdminSidebar({ userEmail }: { userEmail: string }) {
   const pathname = usePathname()
   const router = useRouter()
 
+  console.log("[v0] AdminSidebar rendering - logo path: /images/master3d_logo.jpg")
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
