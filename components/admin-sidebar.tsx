@@ -117,5 +117,6 @@ export function AdminSidebar({ userEmail, isOpen, onClose }: { userEmail: string
         </button>
       </div>
     </aside>
+    </>
   )
 }

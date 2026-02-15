@@ -228,8 +228,8 @@ export default async function AdminDashboardPage() {
                     </tr>
                   ))}
                 </tbody>
-              </div>
-            </table>
+              </table>
+            </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="rounded-full bg-muted p-4">
