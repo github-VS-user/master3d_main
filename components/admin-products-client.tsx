@@ -218,20 +218,20 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-foreground">Products</h1>
-          <p className="mt-1 text-muted-foreground">
+          <h1 className="font-heading text-xl font-bold text-foreground sm:text-2xl">Products</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             {products.length}
             {products.length === 1 ? " product" : " products"}
           </p>
         </div>
         <button
           onClick={openAdd}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <Plus className="h-4 w-4" />
-          Add Product
+          <span>Add Product</span>
         </button>
       </div>
 
@@ -445,39 +445,40 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
       {/* Product list */}
       <div className="mt-6 overflow-hidden rounded-lg border border-border bg-card">
         {products.length > 0 ? (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px]">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">Product</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">Price</th>
-                <th className="hidden px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground md:table-cell">Colors</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">Featured</th>
-                <th className="px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">Actions</th>
+                <th className="px-3 py-3 text-left text-xs font-medium uppercase text-muted-foreground lg:px-4">Product</th>
+                <th className="px-3 py-3 text-left text-xs font-medium uppercase text-muted-foreground lg:px-4">Price</th>
+                <th className="hidden px-3 py-3 text-left text-xs font-medium uppercase text-muted-foreground md:table-cell lg:px-4">Colors</th>
+                <th className="px-3 py-3 text-left text-xs font-medium uppercase text-muted-foreground lg:px-4">Featured</th>
+                <th className="px-3 py-3 text-right text-xs font-medium uppercase text-muted-foreground lg:px-4">Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => (
                 <tr key={product.id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
+                  <td className="px-3 py-3 lg:px-4">
+                    <div className="flex items-center gap-2 lg:gap-3">
                       {product.image_url && (
                         <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded bg-muted">
                           <Image src={product.image_url} alt="" fill className="object-cover" sizes="40px" />
                         </div>
                       )}
-                      <div>
-                        <p className="text-sm font-medium text-card-foreground">{product.name}</p>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-card-foreground">{product.name}</p>
                         {product.description && (
                           <p className="line-clamp-1 text-xs text-muted-foreground">{product.description}</p>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm font-medium text-card-foreground">
+                  <td className="whitespace-nowrap px-3 py-3 text-sm font-medium text-card-foreground lg:px-4">
                     {"CHF "}
                     {Number(product.price).toFixed(2)}
                   </td>
-                  <td className="hidden px-4 py-3 md:table-cell">
+                  <td className="hidden px-3 py-3 md:table-cell lg:px-4">
                     <div className="flex gap-1">
                       {product.colors?.slice(0, 3).map((colorName) => {
                         const color = PRESET_COLORS.find(c => c.name === colorName)
@@ -495,11 +496,11 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 py-3 lg:px-4">
                     {product.featured && <Star className="h-4 w-4 fill-primary text-primary" />}
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="px-3 py-3 lg:px-4">
+                    <div className="flex items-center justify-end gap-1.5">
                       <button
                         onClick={() => openEdit(product)}
                         className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
@@ -520,6 +521,7 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <div className="py-12 text-center text-sm text-muted-foreground">
             No products yet. Click &quot;Add Product&quot; to get started.
