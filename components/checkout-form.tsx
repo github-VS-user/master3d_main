@@ -47,11 +47,12 @@ export function CheckoutForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name || !phone || !street || !city || !zip || !canton) {
-      toast.error("Please fill in all fields")
+    if (!name || !street || !city || !zip || !canton) {
+      toast.error("Please fill in all required fields")
       return
     }
-    if (!/^\+41\s?\d{2}\s?\d{3}\s?\d{2}\s?\d{2}$/.test(phone.replace(/\s/g, "").replace(/^\+41/, "+41"))) {
+    // Validate phone if provided
+    if (phone && !/^\+41\s?\d{2}\s?\d{3}\s?\d{2}\s?\d{2}$/.test(phone.replace(/\s/g, "").replace(/^\+41/, "+41"))) {
       if (!/^\+41/.test(phone)) {
         toast.error("Phone number must start with +41 (Swiss number)")
         return
@@ -83,7 +84,9 @@ export function CheckoutForm() {
 
       const data = await res.json()
       clearCart()
-      router.push(`/order-success?id=${data.order_number}`)
+      toast.success(`Order #${data.order_number} placed successfully!`)
+      // Redirect to My Orders with order number pre-filled
+      router.push(`/my-orders?order=${data.order_number}`)
     } catch {
       toast.error("Failed to place order. Please try again.")
     } finally {
@@ -180,10 +183,10 @@ export function CheckoutForm() {
 
       {/* Order form */}
       <div className="lg:col-span-2">
-        <div className="rounded-lg border border-border bg-card p-6">
-          <h2 className="font-heading text-lg font-semibold text-card-foreground">Shipping Details</h2>
+        <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-base font-semibold text-card-foreground sm:text-lg">Shipping Details</h2>
           <p className="mt-1 text-xs text-muted-foreground">Shipping to Switzerland only</p>
-          <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:mt-5 sm:gap-4">
             <div>
               <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-card-foreground">
                 Full Name
@@ -200,17 +203,17 @@ export function CheckoutForm() {
             </div>
             <div>
               <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-card-foreground">
-                Phone Number
+                Phone Number <span className="text-xs text-muted-foreground">(optional)</span>
               </label>
               <input
                 id="phone"
                 type="tel"
-                required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+41 XX XXX XX XX"
                 className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
+              <p className="mt-1 text-xs text-muted-foreground">Recommended for order tracking and updates</p>
             </div>
             <div>
               <label htmlFor="street" className="mb-1.5 block text-sm font-medium text-card-foreground">
@@ -226,7 +229,7 @@ export function CheckoutForm() {
                 className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4">
               <div>
                 <label htmlFor="zip" className="mb-1.5 block text-sm font-medium text-card-foreground">
                   ZIP Code

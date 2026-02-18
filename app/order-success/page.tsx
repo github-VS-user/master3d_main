@@ -85,6 +85,11 @@ export default async function OrderSuccessPage({
                   {"Send payment to: "}
                   <span className="font-mono font-semibold text-foreground">+41 78 251 47 68</span>
                 </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {"Include order number #"}
+                  {orderNumber}
+                  {" in the payment message/description."}
+                </p>
               </div>
               <div className="rounded-md bg-muted p-4">
                 <div className="flex items-center gap-2">
