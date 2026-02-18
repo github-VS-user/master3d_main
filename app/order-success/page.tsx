@@ -34,18 +34,19 @@ export default async function OrderSuccessPage({
     )
   }
 
-  // Fetch order details
-  const supabase = await createClient()
-  const { data: order } = await supabase
-    .from("orders")
-    .select("*")
-    .eq("order_number", orderNumber)
-    .single()
+  try {
+    // Fetch order details
+    const supabase = await createClient()
+    const { data: order } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("order_number", orderNumber)
+      .single()
 
-  const { data: orderItems } = await supabase
-    .from("order_items")
-    .select("*")
-    .eq("order_id", order?.id)
+    const { data: orderItems } = await supabase
+      .from("order_items")
+      .select("*")
+      .eq("order_id", order?.id)
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -165,7 +166,7 @@ export default async function OrderSuccessPage({
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Phone</dt>
-                  <dd className="font-medium text-foreground">{order.customer_phone}</dd>
+                  <dd className="font-medium text-foreground">{order.customer_phone || "Not provided"}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Address</dt>
@@ -195,4 +196,20 @@ export default async function OrderSuccessPage({
       <Footer />
     </div>
   )
+  } catch (error) {
+    console.error("[v0] Failed to load order details:", error)
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex flex-1 items-center justify-center px-4">
+          <div className="text-center">
+            <h1 className="font-heading text-2xl font-bold text-foreground">Order Details Unavailable</h1>
+            <p className="mt-2 text-muted-foreground">We couldn't load your order details. Please try again later or contact support.</p>
+            <Link href="/my-orders" className="mt-4 inline-block text-primary underline">View My Orders</Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 }
