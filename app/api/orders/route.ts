@@ -1,10 +1,20 @@
 import { createClient } from "@/lib/supabase/server"
+import { createTrackingClient } from "@/lib/supabase/tracking"
 import { NextResponse } from "next/server"
 
 function generateOrderNumber(): string {
   // Generate a unique 3-digit order number
   const num = Math.floor(100 + Math.random() * 900)
   return String(num)
+}
+
+function determineShipper(address: string): string {
+  // Check if address contains Geneva/Genève keywords
+  const lowerAddress = address.toLowerCase()
+  if (lowerAddress.includes('geneva') || lowerAddress.includes('genève') || lowerAddress.includes('geneve')) {
+    return 'Oscar'
+  }
+  return 'Dario'
 }
 
 export async function POST(request: Request) {
@@ -66,6 +76,27 @@ export async function POST(request: Request) {
     if (itemsError) {
       console.error("Order items creation error:", itemsError)
       return NextResponse.json({ error: "Failed to create order items" }, { status: 500 })
+    }
+
+    // Sync to tracking database (fire-and-forget)
+    try {
+      const trackingClient = createTrackingClient()
+      const shipper = determineShipper(customer_address)
+      const productNames = items.map((item: any) => item.product_name).join(', ')
+      
+      await trackingClient.from('orders').insert({
+        order_code: orderNumber, // Maps to order_code in tracking DB
+        object_name: productNames, // Product name(s)
+        shipper: shipper, // Oscar for Geneva, Dario for others
+        status: 'Waiting', // Must be one of: Waiting, printing, shipping, delivered
+        price: total,
+        client_name: customer_name,
+      })
+      
+      console.log(`[v0] Synced order ${orderNumber} to tracking database`)
+    } catch (trackingError) {
+      console.error('[v0] Failed to sync to tracking database:', trackingError)
+      // Don't fail the order creation if tracking sync fails
     }
 
     // Send notification email and SMS (fire-and-forget)

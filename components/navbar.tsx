@@ -32,6 +32,9 @@ export function Navbar() {
           <Link href="/catalog" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
             Catalog
           </Link>
+          <Link href="/my-orders" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
+            My Orders
+          </Link>
           <Link href="/checkout" className="relative flex items-center gap-1 text-sm font-medium text-foreground transition-colors hover:text-primary">
             <ShoppingCart className="h-5 w-5" />
             {count > 0 && (
@@ -79,6 +82,13 @@ export function Navbar() {
               className="text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
               Catalog
+            </Link>
+            <Link
+              href="/my-orders"
+              onClick={() => setMobileOpen(false)}
+              className="text-sm font-medium text-foreground transition-colors hover:text-primary"
+            >
+              My Orders
             </Link>
           </div>
         </div>
