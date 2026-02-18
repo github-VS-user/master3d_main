@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Search, Package, ExternalLink, Calendar, Phone, MapPin, CreditCard, Clock } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 
@@ -24,6 +25,7 @@ type OrderItem = {
 }
 
 export function MyOrdersClient() {
+  const searchParams = useSearchParams()
   const [searchType, setSearchType] = useState<"phone" | "order">("phone")
   const [phone, setPhone] = useState("")
   const [orderNumber, setOrderNumber] = useState("")
@@ -31,6 +33,22 @@ export function MyOrdersClient() {
   const [orderItems, setOrderItems] = useState<Record<string, OrderItem[]>>({})
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
+
+  // Auto-search if order number is in URL
+  useEffect(() => {
+    const orderFromUrl = searchParams.get('order')
+    if (orderFromUrl) {
+      setSearchType('order')
+      setOrderNumber(orderFromUrl)
+      // Trigger search automatically
+      setTimeout(() => {
+        const form = document.querySelector('form')
+        if (form) {
+          form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+        }
+      }, 100)
+    }
+  }, [searchParams])
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,15 +109,15 @@ export function MyOrdersClient() {
   return (
     <div className="space-y-6">
       {/* Search form */}
-      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-        <form onSubmit={handleSearch} className="space-y-4">
+      <div className="rounded-lg border border-border bg-card p-4 shadow-sm sm:p-6">
+        <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
           <div>
             <label className="block text-sm font-medium text-foreground">Search By</label>
-            <div className="mt-2 flex gap-3">
+            <div className="mt-2 flex gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setSearchType("phone")}
-                className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-colors sm:flex-none sm:px-4 sm:text-sm ${
                   searchType === "phone"
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-background text-foreground hover:bg-muted"
@@ -110,7 +128,7 @@ export function MyOrdersClient() {
               <button
                 type="button"
                 onClick={() => setSearchType("order")}
-                className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-colors sm:flex-none sm:px-4 sm:text-sm ${
                   searchType === "order"
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-background text-foreground hover:bg-muted"
@@ -130,7 +148,7 @@ export function MyOrdersClient() {
                 ? "Enter the phone number you used when placing your order"
                 : "Enter your 3-digit order number (e.g., 123)"}
             </p>
-            <div className="mt-2 flex gap-2">
+            <div className="mt-2 flex flex-col gap-2 sm:flex-row">
               {searchType === "phone" ? (
                 <input
                   type="tel"
@@ -138,7 +156,7 @@ export function MyOrdersClient() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+41 XX XXX XX XX"
-                  className="flex-1 rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="flex-1 rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:px-4"
                   required
                 />
               ) : (
@@ -150,24 +168,24 @@ export function MyOrdersClient() {
                   placeholder="123"
                   pattern="[0-9]{3}"
                   maxLength={3}
-                  className="flex-1 rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="flex-1 rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:px-4"
                   required
                 />
               )}
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 sm:px-6"
               >
                 {loading ? (
                   <>
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                    Searching...
+                    <span className="sm:inline">Searching...</span>
                   </>
                 ) : (
                   <>
                     <Search className="h-4 w-4" />
-                    Search
+                    <span>Search</span>
                   </>
                 )}
               </button>
@@ -187,17 +205,17 @@ export function MyOrdersClient() {
               {orders.map((order) => (
                 <div key={order.id} className="rounded-lg border border-border bg-card shadow-sm">
                   {/* Order header */}
-                  <div className="border-b border-border bg-muted/30 px-6 py-4">
+                  <div className="border-b border-border bg-muted/30 px-4 py-3 sm:px-6 sm:py-4">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <div className="rounded-full bg-primary/10 p-2">
-                          <Package className="h-5 w-5 text-primary" />
+                          <Package className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
                         </div>
                         <div>
-                          <p className="font-heading text-lg font-bold text-foreground">
+                          <p className="font-heading text-base font-bold text-foreground sm:text-lg">
                             Order #{order.order_number}
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs text-muted-foreground sm:text-sm">
                             {new Date(order.created_at).toLocaleDateString("en-CH", {
                               year: "numeric",
                               month: "long",
@@ -210,7 +228,7 @@ export function MyOrdersClient() {
                         href={getTrackingUrl(order.order_number)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                        className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                       >
                         <ExternalLink className="h-4 w-4" />
                         Track Order
@@ -219,7 +237,7 @@ export function MyOrdersClient() {
                   </div>
 
                   {/* Order details */}
-                  <div className="p-6">
+                  <div className="p-4 sm:p-6">
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                       {/* Customer info */}
                       <div className="space-y-3">

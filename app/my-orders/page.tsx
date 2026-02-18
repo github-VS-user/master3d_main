@@ -13,10 +13,10 @@ export default function MyOrdersPage() {
     <div className="flex min-h-screen flex-col">
       <Navbar />
       <main className="flex-1 bg-muted">
-        <div className="mx-auto max-w-4xl px-4 py-12 lg:px-8">
-          <div className="mb-8">
-            <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">My Orders</h1>
-            <p className="mt-2 text-muted-foreground">Track your orders and view order details</p>
+        <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12 lg:px-8">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">My Orders</h1>
+            <p className="mt-2 text-sm text-muted-foreground sm:text-base">Track your orders and view order details</p>
           </div>
           <MyOrdersClient />
         </div>
