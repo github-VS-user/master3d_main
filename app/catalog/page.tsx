@@ -1,14 +1,10 @@
-import { createClient } from "@/lib/supabase/server"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { ProductCard } from "@/components/product-card"
 import { Package } from "lucide-react"
-import type { Metadata } from "next"
+import { createClient } from "@/lib/supabase/server"
 
-export const metadata: Metadata = {
-  title: "Catalog | Master 3D",
-  description: "Browse our full range of 3D printed products. Custom designs, prototypes, and more.",
-}
+export const dynamic = "force-dynamic"
 
 export default async function CatalogPage() {
   try {
