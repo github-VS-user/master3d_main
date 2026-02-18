@@ -85,13 +85,12 @@ export async function POST(request: Request) {
       const productNames = items.map((item: any) => item.product_name).join(', ')
       
       await trackingClient.from('orders').insert({
-        order_number: orderNumber,
-        name: productNames, // Product name(s)
+        order_code: orderNumber, // Maps to order_code in tracking DB
+        object_name: productNames, // Product name(s)
         shipper: shipper, // Oscar for Geneva, Dario for others
-        status: 'Processing',
-        phone: customer_phone,
-        address: customer_address,
-        client: customer_name,
+        status: 'Waiting', // Must be one of: Waiting, printing, shipping, delivered
+        price: total,
+        client_name: customer_name,
       })
       
       console.log(`[v0] Synced order ${orderNumber} to tracking database`)
