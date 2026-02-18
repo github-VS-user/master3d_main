@@ -84,9 +84,8 @@ export function CheckoutForm() {
 
       const data = await res.json()
       clearCart()
-      toast.success(`Order #${data.order_number} placed successfully!`)
-      // Redirect to My Orders with order number pre-filled
-      router.push(`/my-orders?order=${data.order_number}`)
+      // Redirect to order confirmation page
+      router.push(`/order-success?id=${data.order_number}`)
     } catch {
       toast.error("Failed to place order. Please try again.")
     } finally {
