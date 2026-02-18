@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-import { Search, Package, ExternalLink, Calendar, Phone, MapPin, CreditCard, Clock } from "lucide-react"
+import Link from "next/link"
+import { Search, Package, ExternalLink, Calendar, Phone, MapPin, CreditCard, Clock, FileText, X, Building2 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 
 type Order = {
@@ -33,6 +34,8 @@ export function MyOrdersClient() {
   const [orderItems, setOrderItems] = useState<Record<string, OrderItem[]>>({})
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
   // Auto-search if order number is in URL
   useEffect(() => {
@@ -224,15 +227,27 @@ export function MyOrdersClient() {
                           </p>
                         </div>
                       </div>
-                      <a
-                        href={getTrackingUrl(order.order_number)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        Track Order
-                      </a>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <button
+                          onClick={() => {
+                            setSelectedOrder(order)
+                            setShowPaymentModal(true)
+                          }}
+                          className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+                        >
+                          <FileText className="h-4 w-4" />
+                          Payment Info
+                        </button>
+                        <a
+                          href={getTrackingUrl(order.order_number)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          Track Order
+                        </a>
+                      </div>
                     </div>
                   </div>
 
@@ -337,6 +352,120 @@ export function MyOrdersClient() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Payment Instructions Modal */}
+      {showPaymentModal && selectedOrder && (
+        <>
+          {/* Overlay */}
+          <div 
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowPaymentModal(false)}
+          />
+          
+          {/* Modal */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border border-border bg-card shadow-2xl">
+              {/* Header */}
+              <div className="sticky top-0 flex items-center justify-between border-b border-border bg-card px-6 py-4">
+                <div>
+                  <h2 className="font-heading text-xl font-bold text-foreground">Payment Instructions</h2>
+                  <p className="text-sm text-muted-foreground">Order #{selectedOrder.order_number}</p>
+                </div>
+                <button
+                  onClick={() => setShowPaymentModal(false)}
+                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="space-y-6 p-6">
+                {/* Payment status */}
+                <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/50 p-4">
+                  {selectedOrder.is_paid ? (
+                    <>
+                      <div className="rounded-full bg-green-100 p-2">
+                        <CreditCard className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Payment Confirmed</p>
+                        <p className="text-sm text-muted-foreground">Your order has been paid</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="rounded-full bg-amber-100 p-2">
+                        <Clock className="h-5 w-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Payment Pending</p>
+                        <p className="text-sm text-muted-foreground">Please complete payment to proceed with your order</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Payment methods */}
+                <div>
+                  <h3 className="mb-4 font-heading text-lg font-semibold text-foreground">Payment Methods</h3>
+                  <div className="space-y-4">
+                    {/* TWINT */}
+                    <div className="rounded-lg border border-border bg-muted/30 p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Phone className="h-5 w-5 text-primary" />
+                        <span className="font-semibold text-foreground">TWINT</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Send payment to: <span className="font-mono font-semibold text-foreground">+41 78 251 47 68</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Include order number #{selectedOrder.order_number} in the payment message.
+                      </p>
+                    </div>
+
+                    {/* IBAN */}
+                    <div className="rounded-lg border border-border bg-muted/30 p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Building2 className="h-5 w-5 text-primary" />
+                        <span className="font-semibold text-foreground">Bank Transfer (Min. CHF 10.00)</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        IBAN: <span className="font-mono font-semibold text-foreground">CH15 0021 5215 3188 4640 F</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Include order number #{selectedOrder.order_number} in the payment reference.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order total */}
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-foreground">Total Amount</span>
+                    <span className="font-heading text-2xl font-bold text-primary">
+                      CHF {Number(selectedOrder.total).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* View full order details */}
+                <div className="flex justify-center border-t border-border pt-4">
+                  <Link
+                    href={`/order-success?id=${selectedOrder.order_number}`}
+                    onClick={() => setShowPaymentModal(false)}
+                    className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                  >
+                    View Full Order Details
+                    <ExternalLink className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )
