@@ -4,6 +4,8 @@ import { FeaturedProducts } from "@/components/featured-products"
 import { Footer } from "@/components/footer"
 import { Printer, Zap, ShieldCheck } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 const features = [
   {
     icon: Printer,
