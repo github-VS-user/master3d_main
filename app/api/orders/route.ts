@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { customer_name, customer_phone, customer_address, items, total } = body
 
-    if (!customer_name || !customer_phone || !customer_address || !items || items.length === 0) {
+    if (!customer_name || !customer_address || !items || items.length === 0) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       .insert({
         order_number: orderNumber,
         customer_name,
-        customer_phone,
+        customer_phone: customer_phone || null,
         customer_address,
         total,
         is_paid: false,

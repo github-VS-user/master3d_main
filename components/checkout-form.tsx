@@ -47,11 +47,12 @@ export function CheckoutForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name || !phone || !street || !city || !zip || !canton) {
-      toast.error("Please fill in all fields")
+    if (!name || !street || !city || !zip || !canton) {
+      toast.error("Please fill in all required fields")
       return
     }
-    if (!/^\+41\s?\d{2}\s?\d{3}\s?\d{2}\s?\d{2}$/.test(phone.replace(/\s/g, "").replace(/^\+41/, "+41"))) {
+    // Validate phone if provided
+    if (phone && !/^\+41\s?\d{2}\s?\d{3}\s?\d{2}\s?\d{2}$/.test(phone.replace(/\s/g, "").replace(/^\+41/, "+41"))) {
       if (!/^\+41/.test(phone)) {
         toast.error("Phone number must start with +41 (Swiss number)")
         return
@@ -200,17 +201,17 @@ export function CheckoutForm() {
             </div>
             <div>
               <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-card-foreground">
-                Phone Number
+                Phone Number <span className="text-xs text-muted-foreground">(optional)</span>
               </label>
               <input
                 id="phone"
                 type="tel"
-                required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+41 XX XXX XX XX"
                 className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
+              <p className="mt-1 text-xs text-muted-foreground">Recommended for order tracking and updates</p>
             </div>
             <div>
               <label htmlFor="street" className="mb-1.5 block text-sm font-medium text-card-foreground">

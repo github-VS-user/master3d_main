@@ -24,7 +24,9 @@ type OrderItem = {
 }
 
 export function MyOrdersClient() {
+  const [searchType, setSearchType] = useState<"phone" | "order">("phone")
   const [phone, setPhone] = useState("")
+  const [orderNumber, setOrderNumber] = useState("")
   const [orders, setOrders] = useState<Order[]>([])
   const [orderItems, setOrderItems] = useState<Record<string, OrderItem[]>>({})
   const [loading, setLoading] = useState(false)
@@ -32,7 +34,8 @@ export function MyOrdersClient() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!phone.trim()) return
+    const searchValue = searchType === "phone" ? phone.trim() : orderNumber.trim()
+    if (!searchValue) return
 
     setLoading(true)
     setSearched(true)
@@ -40,12 +43,16 @@ export function MyOrdersClient() {
     try {
       const supabase = createClient()
 
-      // Fetch orders by phone number
-      const { data: ordersData, error: ordersError } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("customer_phone", phone.trim())
-        .order("created_at", { ascending: false })
+      // Fetch orders by phone number or order number
+      let query = supabase.from("orders").select("*")
+      
+      if (searchType === "phone") {
+        query = query.eq("customer_phone", phone.trim())
+      } else {
+        query = query.eq("order_number", orderNumber.trim())
+      }
+      
+      const { data: ordersData, error: ordersError } = await query.order("created_at", { ascending: false })
 
       if (ordersError) throw ordersError
 
@@ -87,22 +94,66 @@ export function MyOrdersClient() {
       <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
         <form onSubmit={handleSearch} className="space-y-4">
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-foreground">
-              Phone Number
+            <label className="block text-sm font-medium text-foreground">Search By</label>
+            <div className="mt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setSearchType("phone")}
+                className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                  searchType === "phone"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-foreground hover:bg-muted"
+                }`}
+              >
+                Phone Number
+              </button>
+              <button
+                type="button"
+                onClick={() => setSearchType("order")}
+                className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                  searchType === "order"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-foreground hover:bg-muted"
+                }`}
+              >
+                Order Number
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <label htmlFor="search-input" className="block text-sm font-medium text-foreground">
+              {searchType === "phone" ? "Phone Number" : "Order Number"}
             </label>
             <p className="mt-1 text-sm text-muted-foreground">
-              Enter the phone number you used when placing your order
+              {searchType === "phone"
+                ? "Enter the phone number you used when placing your order"
+                : "Enter your 3-digit order number (e.g., 123)"}
             </p>
             <div className="mt-2 flex gap-2">
-              <input
-                type="tel"
-                id="phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+41 XX XXX XX XX"
-                className="flex-1 rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                required
-              />
+              {searchType === "phone" ? (
+                <input
+                  type="tel"
+                  id="search-input"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+41 XX XXX XX XX"
+                  className="flex-1 rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  required
+                />
+              ) : (
+                <input
+                  type="text"
+                  id="search-input"
+                  value={orderNumber}
+                  onChange={(e) => setOrderNumber(e.target.value)}
+                  placeholder="123"
+                  pattern="[0-9]{3}"
+                  maxLength={3}
+                  className="flex-1 rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  required
+                />
+              )}
               <button
                 type="submit"
                 disabled={loading}
@@ -116,7 +167,7 @@ export function MyOrdersClient() {
                 ) : (
                   <>
                     <Search className="h-4 w-4" />
-                    Search Orders
+                    Search
                   </>
                 )}
               </button>
@@ -261,7 +312,9 @@ export function MyOrdersClient() {
               </div>
               <h3 className="mb-2 font-heading text-lg font-semibold text-foreground">No orders found</h3>
               <p className="text-sm text-muted-foreground">
-                We couldn't find any orders with this phone number. Please check and try again.
+                {searchType === "phone"
+                  ? "We couldn't find any orders with this phone number. Try searching by order number instead."
+                  : "We couldn't find an order with this number. Please check and try again."}
               </p>
             </div>
           )}
