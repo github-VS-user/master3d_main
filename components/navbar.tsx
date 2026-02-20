@@ -2,13 +2,19 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ShoppingCart, Menu, X } from "lucide-react"
+import { ShoppingCart, Menu, X, Languages } from "lucide-react"
 import { useCart } from "@/hooks/use-cart"
+import { useLanguage } from "@/lib/language-context"
 import { useState } from "react"
 
 export function Navbar() {
   const { count } = useCart()
+  const { language, setLanguage, t } = useLanguage()
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  const toggleLanguage = () => {
+    setLanguage(language === "en" ? "fr" : "en")
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
@@ -25,16 +31,24 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
           <Link href="/" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
-            Home
+            {t("nav.home")}
           </Link>
           <Link href="/catalog" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
-            Catalog
+            {t("nav.catalog")}
           </Link>
           <Link href="/my-orders" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
-            My Orders
+            {t("nav.myOrders")}
           </Link>
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            title={language === "en" ? "Switch to French" : "Passer à l'anglais"}
+          >
+            <Languages className="h-4 w-4" />
+            <span className="uppercase">{language}</span>
+          </button>
           <Link href="/checkout" className="relative flex items-center gap-1 text-sm font-medium text-foreground transition-colors hover:text-primary">
             <ShoppingCart className="h-5 w-5" />
             {count > 0 && (
@@ -74,22 +88,30 @@ export function Navbar() {
               onClick={() => setMobileOpen(false)}
               className="text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
-              Home
+              {t("nav.home")}
             </Link>
             <Link
               href="/catalog"
               onClick={() => setMobileOpen(false)}
               className="text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
-              Catalog
+              {t("nav.catalog")}
             </Link>
             <Link
               href="/my-orders"
               onClick={() => setMobileOpen(false)}
               className="text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
-              My Orders
+              {t("nav.myOrders")}
             </Link>
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            >
+              <Languages className="h-4 w-4" />
+              <span>{language === "en" ? "English" : "Français"}</span>
+              <span className="ml-auto text-xs text-muted-foreground">→ {language === "en" ? "FR" : "EN"}</span>
+            </button>
           </div>
         </div>
       )}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { IntroAnimation } from '@/components/intro-animation'
+import { LanguageProvider } from '@/lib/language-context'
 
 import './globals.css'
 
@@ -25,9 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${_inter.variable} ${_spaceGrotesk.variable} font-sans antialiased`}>
-        <IntroAnimation />
-        {children}
-        <Toaster position="top-right" richColors />
+        <LanguageProvider>
+          <IntroAnimation />
+          {children}
+          <Toaster position="top-right" richColors />
+        </LanguageProvider>
       </body>
     </html>
   )
