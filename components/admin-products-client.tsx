@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client"
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Pencil, Trash2, Star, Upload, X } from "lucide-react"
+import { Plus, Pencil, Trash2, Star, Upload, X, Package } from "lucide-react"
 import Image from "next/image"
 import { toast } from "sonner"
 
