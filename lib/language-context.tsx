@@ -20,12 +20,20 @@ const translations = {
     // Hero
     "hero.badge": "Made in Switzerland",
     "hero.title": "Precision 3D Printing for Every Idea",
+    "hero.description": "From custom prototypes to unique designs, Master 3D brings your concepts to life with Swiss-quality 3D printing. Fast delivery across Switzerland.",
     "hero.subtitle": "From custom prototypes to unique designs, Master 3D brings your concepts to life with Swiss-quality 3D printing. Fast delivery across Switzerland.",
     "hero.browseCatalog": "Browse Catalog",
     "hero.trackOrder": "Track Your Order",
+    "hero.productsPrinted": "Products Printed",
     "hero.productsCount": "Products Printed",
     
     // Features
+    "features.precisionTitle": "Precision Printing",
+    "features.precisionDesc": "High-quality FDM and resin printing with layer accuracy down to 0.1mm.",
+    "features.fastTitle": "Fast Delivery",
+    "features.fastDesc": "Quick turnaround with shipping across all of Switzerland.",
+    "features.qualityTitle": "Swiss Quality",
+    "features.qualityDesc": "Every product is inspected to meet Swiss quality standards before shipping.",
     "features.quality.title": "Swiss Quality",
     "features.quality.desc": "Premium materials and precision printing for durable results",
     "features.shipping.title": "Fast Shipping",
@@ -41,6 +49,9 @@ const translations = {
     "featured.noProducts": "No featured products yet. Check back soon!",
     
     // Product Card
+    "productCard.color": "Color",
+    "productCard.addToCart": "Add to Cart",
+    "productCard.freeShipping": "Free shipping",
     "product.addToCart": "Add to Cart",
     "product.selectColor": "Select Color",
     "product.shippingTime": "Shipping Time",
@@ -93,6 +104,11 @@ const translations = {
     "orderSuccess.trackYourOrder": "Track Your Order",
     "orderSuccess.backToHome": "Back to Home",
     
+    // Footer
+    "footer.tagline": "Swiss 3D Printing Excellence",
+    "footer.trackOrder": "Track Order",
+    "footer.rights": "All rights reserved.",
+    
     // Common
     "common.loading": "Loading...",
     "common.close": "Close",
@@ -108,12 +124,20 @@ const translations = {
     // Hero
     "hero.badge": "Fabriqué en Suisse",
     "hero.title": "Impression 3D de Précision pour Chaque Idée",
+    "hero.description": "Des prototypes personnalisés aux designs uniques, Master 3D donne vie à vos concepts avec une impression 3D de qualité suisse. Livraison rapide dans toute la Suisse.",
     "hero.subtitle": "Des prototypes personnalisés aux designs uniques, Master 3D donne vie à vos concepts avec une impression 3D de qualité suisse. Livraison rapide dans toute la Suisse.",
     "hero.browseCatalog": "Parcourir le Catalogue",
     "hero.trackOrder": "Suivre Votre Commande",
+    "hero.productsPrinted": "Produits Imprimés",
     "hero.productsCount": "Produits Imprimés",
     
     // Features
+    "features.precisionTitle": "Impression de Précision",
+    "features.precisionDesc": "Impression FDM et résine de haute qualité avec une précision de couche jusqu'à 0,1 mm.",
+    "features.fastTitle": "Livraison Rapide",
+    "features.fastDesc": "Délai d'exécution rapide avec expédition dans toute la Suisse.",
+    "features.qualityTitle": "Qualité Suisse",
+    "features.qualityDesc": "Chaque produit est inspecté pour répondre aux normes de qualité suisses avant l'expédition.",
     "features.quality.title": "Qualité Suisse",
     "features.quality.desc": "Matériaux premium et impression de précision pour des résultats durables",
     "features.shipping.title": "Livraison Rapide",
@@ -129,6 +153,9 @@ const translations = {
     "featured.noProducts": "Aucun produit en vedette pour le moment. Revenez bientôt!",
     
     // Product Card
+    "productCard.color": "Couleur",
+    "productCard.addToCart": "Ajouter au Panier",
+    "productCard.freeShipping": "Livraison gratuite",
     "product.addToCart": "Ajouter au Panier",
     "product.selectColor": "Sélectionner la Couleur",
     "product.shippingTime": "Délai de Livraison",
@@ -180,6 +207,11 @@ const translations = {
     "orderSuccess.shippingInfo": "Informations de Livraison",
     "orderSuccess.trackYourOrder": "Suivre Votre Commande",
     "orderSuccess.backToHome": "Retour à l'Accueil",
+    
+    // Footer
+    "footer.tagline": "Excellence Suisse en Impression 3D",
+    "footer.trackOrder": "Suivre la Commande",
+    "footer.rights": "Tous droits réservés.",
     
     // Common
     "common.loading": "Chargement...",
