@@ -25,6 +25,7 @@ interface FormState {
   description: string
   price: string
   image_url: string
+  images: string[]
   shipping_time: string
   shipping_cost: string
   featured: boolean
@@ -36,6 +37,7 @@ const emptyForm: FormState = {
   description: "",
   price: "",
   image_url: "",
+  images: [],
   shipping_time: "3-5 business days",
   shipping_cost: "0",
   featured: false,
@@ -79,6 +81,7 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
       description: product.description || "",
       price: String(product.price),
       image_url: product.image_url || "",
+      images: product.images || [],
       shipping_time: product.shipping_time,
       shipping_cost: String(product.shipping_cost),
       featured: product.featured,
@@ -117,7 +120,8 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
       }
 
       const data = await response.json()
-      setForm({ ...form, image_url: data.url })
+      // Add to images array
+      setForm({ ...form, images: [...form.images, data.url], image_url: form.images.length === 0 ? data.url : form.image_url })
       toast.success('Image uploaded')
     } catch (error) {
       toast.error('Failed to upload image')
@@ -125,6 +129,16 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
     } finally {
       setUploading(false)
     }
+  }
+
+  const removeImage = (index: number) => {
+    const newImages = form.images.filter((_, i) => i !== index)
+    setForm({ 
+      ...form, 
+      images: newImages,
+      image_url: newImages.length > 0 ? newImages[0] : ""
+    })
+    toast.success('Image removed')
   }
 
   const toggleColor = (colorName: string) => {
@@ -170,7 +184,8 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
       name: form.name,
       description: form.description || null,
       price: Number(form.price),
-      image_url: form.image_url || null,
+      image_url: form.images.length > 0 ? form.images[0] : null,
+      images: form.images.length > 0 ? form.images : null,
       shipping_time: form.shipping_time,
       shipping_cost: Number(form.shipping_cost),
       featured: form.featured,
@@ -216,6 +231,104 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
     router.refresh()
   }
 
+  const handlePrintCatalog = () => {
+    const printWindow = window.open('', '', 'width=800,height=600')
+    if (!printWindow) {
+      toast.error('Please allow popups to print catalog')
+      return
+    }
+
+    const catalogHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Master 3D Product Catalog</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: Arial, sans-serif; padding: 40px; max-width: 1200px; margin: 0 auto; }
+            h1 { text-align: center; color: #FF6B00; margin-bottom: 10px; font-size: 32px; }
+            .subtitle { text-align: center; color: #666; margin-bottom: 40px; font-size: 16px; }
+            .product { page-break-inside: avoid; margin-bottom: 40px; border: 2px solid #e5e5e5; border-radius: 12px; padding: 20px; background: white; }
+            .product-header { display: flex; gap: 20px; margin-bottom: 15px; }
+            .product-images { flex-shrink: 0; }
+            .main-image { width: 200px; height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
+            .thumbnail-container { display: flex; gap: 8px; margin-top: 8px; }
+            .thumbnail { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+            .product-info { flex: 1; }
+            .product-name { font-size: 24px; font-weight: bold; color: #111; margin-bottom: 8px; }
+            .product-description { color: #666; margin-bottom: 12px; line-height: 1.5; }
+            .product-price { font-size: 28px; font-weight: bold; color: #FF6B00; margin-bottom: 12px; }
+            .product-details { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: 14px; }
+            .detail-label { font-weight: bold; color: #333; }
+            .detail-value { color: #666; }
+            .colors { display: flex; gap: 8px; flex-wrap: wrap; }
+            .color-badge { display: inline-block; padding: 4px 12px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; }
+            .footer { text-align: center; margin-top: 60px; padding-top: 20px; border-top: 2px solid #FF6B00; }
+            .website { font-size: 24px; font-weight: bold; color: #FF6B00; }
+            @media print {
+              body { padding: 20px; }
+              .product { page-break-inside: avoid; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>MASTER 3D</h1>
+          <div class="subtitle">Product Catalog - Swiss 3D Printing Excellence</div>
+          
+          ${products.map(product => `
+            <div class="product">
+              <div class="product-header">
+                <div class="product-images">
+                  ${product.images && product.images.length > 0 ? `
+                    <img src="${product.images[0]}" alt="${product.name}" class="main-image" />
+                    ${product.images.length > 1 ? `
+                      <div class="thumbnail-container">
+                        ${product.images.slice(1, 5).map(img => `
+                          <img src="${img}" alt="${product.name}" class="thumbnail" />
+                        `).join('')}
+                      </div>
+                    ` : ''}
+                  ` : product.image_url ? `
+                    <img src="${product.image_url}" alt="${product.name}" class="main-image" />
+                  ` : ''}
+                </div>
+                <div class="product-info">
+                  <div class="product-name">${product.name}</div>
+                  ${product.description ? `<div class="product-description">${product.description}</div>` : ''}
+                  <div class="product-price">CHF ${Number(product.price).toFixed(2)}</div>
+                  <div class="product-details">
+                    <span class="detail-label">Shipping Time:</span>
+                    <span class="detail-value">${product.shipping_time}</span>
+                    <span class="detail-label">Shipping Cost:</span>
+                    <span class="detail-value">CHF ${Number(product.shipping_cost).toFixed(2)}</span>
+                    ${product.colors && product.colors.length > 0 ? `
+                      <span class="detail-label">Available Colors:</span>
+                      <div class="colors">
+                        ${product.colors.map(color => `<span class="color-badge">${color}</span>`).join('')}
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+
+          <div class="footer">
+            <div class="website">master3d.net</div>
+            <div style="margin-top: 8px; color: #666; font-size: 14px;">Contact us for custom orders and inquiries</div>
+          </div>
+        </body>
+      </html>
+    `
+
+    printWindow.document.write(catalogHTML)
+    printWindow.document.close()
+    printWindow.focus()
+    setTimeout(() => {
+      printWindow.print()
+    }, 250)
+  }
+
   return (
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -226,13 +339,22 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
             {products.length === 1 ? " product" : " products"}
           </p>
         </div>
-        <button
-          onClick={openAdd}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add Product</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handlePrintCatalog}
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+          >
+            <Package className="h-4 w-4" />
+            <span className="hidden sm:inline">Print Catalog</span>
+          </button>
+          <button
+            onClick={openAdd}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add Product</span>
+          </button>
+        </div>
       </div>
 
       {/* Product form */}
@@ -276,18 +398,30 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
             
             {/* Image Upload */}
             <div className="sm:col-span-2">
-              <label className="mb-1.5 block text-sm font-medium text-card-foreground">Product Image</label>
+              <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                Product Images
+                <span className="ml-1 text-xs text-muted-foreground">({form.images.length} uploaded)</span>
+              </label>
               <div className="flex flex-col gap-3">
-                {form.image_url && (
-                  <div className="relative h-40 w-40 overflow-hidden rounded-lg border border-border">
-                    <Image src={form.image_url} alt="Preview" fill className="object-cover" sizes="160px" />
-                    <button
-                      type="button"
-                      onClick={() => setForm({ ...form, image_url: "" })}
-                      className="absolute right-1 top-1 rounded-full bg-destructive p-1 text-destructive-foreground shadow-md hover:bg-destructive/90"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
+                {form.images.length > 0 && (
+                  <div className="flex flex-wrap gap-3">
+                    {form.images.map((url, index) => (
+                      <div key={index} className="relative h-32 w-32 overflow-hidden rounded-lg border border-border">
+                        <Image src={url} alt={`Product ${index + 1}`} fill className="object-cover" sizes="128px" />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute right-1 top-1 rounded-full bg-destructive p-1 text-destructive-foreground shadow-md hover:bg-destructive/90"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                        {index === 0 && (
+                          <div className="absolute bottom-1 left-1 rounded bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                            Main
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
                 <div>
@@ -305,9 +439,9 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
                     className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
                   >
                     <Upload className="h-4 w-4" />
-                    {uploading ? "Uploading..." : form.image_url ? "Change Image" : "Upload Image"}
+                    {uploading ? "Uploading..." : form.images.length > 0 ? "Add Another Image" : "Upload First Image"}
                   </button>
-                  <p className="mt-1.5 text-xs text-muted-foreground">Maximum 5MB. Supported formats: JPG, PNG, WebP</p>
+                  <p className="mt-1.5 text-xs text-muted-foreground">Maximum 5MB per image. First image will be the main product image.</p>
                 </div>
               </div>
             </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Package, Truck } from "lucide-react"
+import { Package, Truck, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState } from "react"
 import { addToCart } from "@/lib/cart-store"
 import { toast } from "sonner"
@@ -12,6 +12,7 @@ interface Product {
   description: string | null
   price: number
   image_url: string | null
+  images: string[] | null
   shipping_time: string
   shipping_cost: number
   colors: string[] | null
@@ -34,6 +35,16 @@ const COLOR_HEX_MAP: Record<string, string> = {
 export function ProductCard({ product }: { product: Product }) {
   const availableColors = product.colors || []
   const [selectedColor, setSelectedColor] = useState<string>(availableColors[0] || "")
+  const productImages = product.images && product.images.length > 0 ? product.images : (product.image_url ? [product.image_url] : [])
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % productImages.length)
+  }
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length)
+  }
 
   const handleAdd = () => {
     if (availableColors.length > 0 && !selectedColor) {
@@ -55,14 +66,46 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-shadow hover:shadow-lg">
       <div className="relative aspect-square overflow-hidden bg-muted">
-        {product.image_url ? (
-          <Image
-            src={product.image_url}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
+        {productImages.length > 0 ? (
+          <>
+            <Image
+              src={productImages[currentImageIndex]}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+            {productImages.length > 1 && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+                <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
+                  {productImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        index === currentImageIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"
+                      }`}
+                      aria-label={`View image ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         ) : (
           <div className="flex h-full items-center justify-center">
             <Package className="h-12 w-12 text-muted-foreground" />
