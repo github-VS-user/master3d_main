@@ -108,6 +108,13 @@ const translations = {
     "footer.tagline": "Swiss 3D Printing Excellence",
     "footer.trackOrder": "Track Order",
     "footer.rights": "All rights reserved.",
+    "footer.quickLinks": "Quick Links",
+    "footer.legal": "Legal",
+    "footer.contact": "Contact",
+    "footer.terms": "Terms & Conditions",
+    "footer.privacy": "Privacy Policy",
+    "footer.returnPolicy": "Return Policy",
+    "footer.shippingPolicy": "Shipping Policy",
     
     // Common
     "common.loading": "Loading...",
@@ -212,6 +219,13 @@ const translations = {
     "footer.tagline": "Excellence Suisse en Impression 3D",
     "footer.trackOrder": "Suivre la Commande",
     "footer.rights": "Tous droits réservés.",
+    "footer.quickLinks": "Liens Rapides",
+    "footer.legal": "Légal",
+    "footer.contact": "Contact",
+    "footer.terms": "Conditions Générales",
+    "footer.privacy": "Politique de Confidentialité",
+    "footer.returnPolicy": "Politique de Retour",
+    "footer.shippingPolicy": "Politique d'Expédition",
     
     // Common
     "common.loading": "Chargement...",
