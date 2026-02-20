@@ -1,30 +1,33 @@
+"use client"
+
 import { Navbar } from "@/components/navbar"
 import { Hero } from "@/components/hero"
 import { FeaturedProducts } from "@/components/featured-products"
 import { Footer } from "@/components/footer"
 import { Printer, Zap, ShieldCheck } from "lucide-react"
-
-export const dynamic = "force-dynamic"
-
-const features = [
-  {
-    icon: Printer,
-    title: "Precision Printing",
-    description: "High-quality FDM and resin printing with layer accuracy down to 0.1mm.",
-  },
-  {
-    icon: Zap,
-    title: "Fast Delivery",
-    description: "Quick turnaround with shipping across all of Switzerland.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Swiss Quality",
-    description: "Every product is inspected to meet Swiss quality standards before shipping.",
-  },
-]
+import { useLanguage } from "@/lib/language-context"
 
 export default function HomePage() {
+  const { t } = useLanguage()
+
+  const features = [
+    {
+      icon: Printer,
+      title: t("features.precisionTitle"),
+      description: t("features.precisionDesc"),
+    },
+    {
+      icon: Zap,
+      title: t("features.fastTitle"),
+      description: t("features.fastDesc"),
+    },
+    {
+      icon: ShieldCheck,
+      title: t("features.qualityTitle"),
+      description: t("features.qualityDesc"),
+    },
+  ]
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />

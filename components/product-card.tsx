@@ -5,6 +5,7 @@ import { Package, Truck, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState } from "react"
 import { addToCart } from "@/lib/cart-store"
 import { toast } from "sonner"
+import { useLanguage } from "@/lib/language-context"
 
 interface Product {
   id: string
@@ -33,6 +34,7 @@ const COLOR_HEX_MAP: Record<string, string> = {
 }
 
 export function ProductCard({ product }: { product: Product }) {
+  const { t } = useLanguage()
   const availableColors = product.colors || []
   const [selectedColor, setSelectedColor] = useState<string>(availableColors[0] || "")
   const productImages = product.images && product.images.length > 0 ? product.images : (product.image_url ? [product.image_url] : [])
@@ -121,7 +123,7 @@ export function ProductCard({ product }: { product: Product }) {
         {/* Color Selection */}
         {availableColors.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">Color:</p>
+            <p className="mb-2 text-xs font-medium text-muted-foreground">{t("productCard.color")}:</p>
             <div className="flex flex-wrap gap-2">
               {availableColors.map((color) => (
                 <button
@@ -167,13 +169,13 @@ export function ProductCard({ product }: { product: Product }) {
                 {")"}
               </span>
             )}
-            {product.shipping_cost === 0 && <span className="ml-1 font-medium text-primary">Free shipping</span>}
+            {product.shipping_cost === 0 && <span className="ml-1 font-medium text-primary">{t("productCard.freeShipping")}</span>}
           </div>
           <button
             onClick={handleAdd}
             className="mt-1 w-full rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Add to Cart
+            {t("productCard.addToCart")}
           </button>
         </div>
       </div>
