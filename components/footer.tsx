@@ -49,11 +49,11 @@ export function Footer() {
           <div>
             <h3 className="mb-3 text-sm font-semibold text-card">{t("footer.contact")}</h3>
             <ul className="space-y-2 text-sm text-card/60">
-              <li>Dario Gjokaj</li>
-              <li>Zürich, Switzerland</li>
+              <li>Master 3D</li>
+              <li>Geneva, Switzerland</li>
               <li>
                 <a href="tel:+41782514768" className="transition-colors hover:text-card">
-                  +41 78 251 47 68
+                  contact.master3d@gmail.com
                 </a>
               </li>
             </ul>
