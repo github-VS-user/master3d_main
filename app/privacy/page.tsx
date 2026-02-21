@@ -14,7 +14,7 @@ export default function PrivacyPage() {
       <main className="flex-1 bg-muted">
         <div className="mx-auto max-w-4xl px-4 py-12 lg:px-8">
           <h1 className="mb-8 font-heading text-4xl font-bold text-foreground">Privacy Policy</h1>
-          
+
           <div className="space-y-8 rounded-lg border border-border bg-card p-6 text-foreground lg:p-8">
             <section>
               <h2 className="mb-4 text-2xl font-semibold">1. Information We Collect</h2>
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
               </p>
               <ul className="ml-6 list-disc space-y-1 text-muted-foreground">
                 <li>Name and shipping address</li>
-                <li>Phone number (optional, for order updates)</li>
+                <li>Phone number (optional, for order updates & tracking)</li>
                 <li>Order details and design files</li>
                 <li>Payment information (processed securely through TWINT or bank transfer)</li>
               </ul>
@@ -93,7 +93,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">8. Children's Privacy</h2>
               <p className="leading-relaxed text-muted-foreground">
-                Our services are not directed to individuals under 18 years of age. We do not knowingly collect personal information from children.
+                Our services are not directed directly to individuals under 18 years of age. We do not knowingly collect personal information from children.
               </p>
             </section>
 
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">10. Contact Us</h2>
               <p className="leading-relaxed text-muted-foreground">
-                For questions about this privacy policy or to exercise your data rights, contact us at +41 78 251 47 68.
+                For questions about this privacy policy or to exercise your data rights, contact us at contact.master3d@gmail.com.
               </p>
             </section>
 
