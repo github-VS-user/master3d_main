@@ -1,39 +1,45 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { Package, ShoppingBag, LogOut, LayoutDashboard, X } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
+import { Package, ShoppingBag, LogOut, LayoutDashboard, X, Tag, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/promo-codes", label: "Promo Codes", icon: Tag },
 ]
 
-export function AdminSidebar({ userEmail, isOpen, onClose }: { userEmail: string; isOpen: boolean; onClose: () => void }) {
+export function AdminSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false)
 
-  const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push("/admin/login")
+  const handleLogout = () => {
+    sessionStorage.removeItem("admin_authenticated")
+    router.push("/admin")
+    router.refresh()
   }
-
+  
   const handleLinkClick = () => {
-    onClose()
+    setIsOpen(false)
+  }
+  
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen)
   }
 
   return (
-    <>
+    <div className="flex min-h-screen">
       {/* Mobile overlay */}
       {isOpen && (
         <div 
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-          onClick={onClose}
+          onClick={() => setIsOpen(false)}
         />
       )}
       
@@ -102,12 +108,8 @@ export function AdminSidebar({ userEmail, isOpen, onClose }: { userEmail: string
         })}
       </nav>
 
-      {/* User Section */}
+      {/* Logout Section */}
       <div className="border-t border-border bg-muted/30 px-4 py-4">
-        <div className="mb-3 rounded-lg bg-card px-3 py-2 shadow-sm">
-          <p className="text-xs font-medium text-muted-foreground">Logged in as</p>
-          <p className="mt-0.5 truncate text-sm font-semibold text-foreground">{userEmail}</p>
-        </div>
         <button
           onClick={handleLogout}
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-destructive/10 px-3 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/20"
@@ -117,6 +119,26 @@ export function AdminSidebar({ userEmail, isOpen, onClose }: { userEmail: string
         </button>
       </div>
     </aside>
-    </>
+    
+    {/* Main Content */}
+    <div className="flex flex-1 flex-col">
+      {/* Mobile header */}
+      <header className="sticky top-0 z-30 flex h-14 items-center border-b border-border bg-background px-4 lg:hidden">
+        <button
+          onClick={toggleSidebar}
+          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-label="Toggle menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <span className="ml-3 font-semibold">Master 3D Admin</span>
+      </header>
+      
+      {/* Page content */}
+      <main className="flex-1 p-6">
+        {children}
+      </main>
+    </div>
+    </div>
   )
 }

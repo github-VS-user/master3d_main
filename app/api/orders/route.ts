@@ -20,9 +20,9 @@ function determineShipper(address: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { customer_name, customer_phone, customer_address, items, total } = body
+    const { customer_name, customer_email, customer_phone, customer_address, payment_method, promo_code, discount_amount, items, total } = body
 
-    if (!customer_name || !customer_address || !items || items.length === 0) {
+    if (!customer_name || !customer_email || !customer_address || !payment_method || !items || items.length === 0) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
@@ -48,8 +48,12 @@ export async function POST(request: Request) {
       .insert({
         order_number: orderNumber,
         customer_name,
+        customer_email,
         customer_phone: customer_phone || null,
         customer_address,
+        payment_method,
+        promo_code: promo_code || null,
+        discount_amount: discount_amount || 0,
         total,
         is_paid: false,
       })
