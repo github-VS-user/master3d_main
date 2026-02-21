@@ -84,6 +84,24 @@ export function CheckoutForm() {
 
       const data = await res.json()
       clearCart()
+      
+      // Send confirmation email
+      try {
+        await fetch('/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'order-confirmation',
+            orderNumber: data.order_number,
+            total: total,
+            email: email.value,
+          }),
+        })
+      } catch (error) {
+        console.error('[v0] Failed to send confirmation email:', error)
+        // Don't fail the order if email fails
+      }
+      
       // Redirect to order confirmation page
       router.push(`/order-success?id=${data.order_number}`)
     } catch {
