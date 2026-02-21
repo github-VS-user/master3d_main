@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { Package, ShoppingBag, LogOut, LayoutDashboard, X } from "lucide-react"
+import { Package, ShoppingBag, LogOut, LayoutDashboard, X, Tag } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 
@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/promo-codes", label: "Promo Codes", icon: Tag },
 ]
 
 export function AdminSidebar({ userEmail, isOpen, onClose }: { userEmail: string; isOpen: boolean; onClose: () => void }) {
