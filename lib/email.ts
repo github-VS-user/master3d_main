@@ -1,6 +1,13 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend only when the function is called, not at module load time
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY environment variable is not set');
+  }
+  return new Resend(apiKey);
+}
 
 export interface EmailOptions {
   to: string;
@@ -11,6 +18,7 @@ export interface EmailOptions {
 
 export async function sendEmail(options: EmailOptions) {
   try {
+    const resend = getResendClient();
     const result = await resend.emails.send({
       from: 'Master 3D <orders@master3d.net>',
       to: options.to,
