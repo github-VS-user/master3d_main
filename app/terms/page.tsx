@@ -14,7 +14,7 @@ export default function TermsPage() {
       <main className="flex-1 bg-muted">
         <div className="mx-auto max-w-4xl px-4 py-12 lg:px-8">
           <h1 className="mb-8 font-heading text-4xl font-bold text-foreground">Terms & Conditions</h1>
-          
+
           <div className="space-y-8 rounded-lg border border-border bg-card p-6 text-foreground lg:p-8">
             <section>
               <h2 className="mb-4 text-2xl font-semibold">1. Acceptance of Terms</h2>
@@ -51,7 +51,7 @@ export default function TermsPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">5. Production and Delivery</h2>
               <p className="leading-relaxed text-muted-foreground">
-                Production times are estimates and may vary. We will notify you of any significant delays. Delivery is available throughout Switzerland. Risk of loss and title for items pass to you upon delivery to the carrier.
+                Production times are estimates and may vary. We will notify you of any significant delays. Delivery is available throughout Switzerland. Risk of loss and title for items pass to you upon delivery to the carrier (Swiss Post).
               </p>
             </section>
 
@@ -79,7 +79,7 @@ export default function TermsPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">9. Governing Law</h2>
               <p className="leading-relaxed text-muted-foreground">
-                These terms shall be governed by and construed in accordance with the laws of Switzerland. Any disputes shall be subject to the exclusive jurisdiction of the courts of Zürich, Switzerland.
+                These terms shall be governed by and construed in accordance with the laws of Switzerland. Any disputes shall be subject to the exclusive jurisdiction of the courts of Geneva, Switzerland.
               </p>
             </section>
 
@@ -93,7 +93,7 @@ export default function TermsPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Contact Information</h2>
               <p className="leading-relaxed text-muted-foreground">
-                For questions about these terms, please contact us at +41 78 251 47 68.
+                For questions about these terms, please contact us at contact.master3d@gmail.com.
               </p>
             </section>
 
