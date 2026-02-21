@@ -14,7 +14,7 @@ export default function ReturnPolicyPage() {
       <main className="flex-1 bg-muted">
         <div className="mx-auto max-w-4xl px-4 py-12 lg:px-8">
           <h1 className="mb-8 font-heading text-4xl font-bold text-foreground">Return Policy</h1>
-          
+
           <div className="space-y-8 rounded-lg border border-border bg-card p-6 text-foreground lg:p-8">
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Custom-Made Products</h2>
@@ -71,7 +71,7 @@ export default function ReturnPolicyPage() {
                 To initiate a return for a defective product:
               </p>
               <ol className="ml-6 list-decimal space-y-2 text-muted-foreground">
-                <li>Contact us at +41 78 251 47 68 within 7 days of delivery</li>
+                <li>Contact us at contact.master3d@gmail.com within 7 days of delivery</li>
                 <li>Provide your order number and clear photos of the issue</li>
                 <li>Wait for return authorization before sending anything back</li>
                 <li>Ship the item back in its original packaging (if approved)</li>
@@ -96,7 +96,7 @@ export default function ReturnPolicyPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Questions</h2>
               <p className="leading-relaxed text-muted-foreground">
-                If you have questions about our return policy or need to report an issue with your order, please contact us at +41 78 251 47 68. We're committed to ensuring your satisfaction with every order.
+                If you have questions about our return policy or need to report an issue with your order, please contact us at +41 78 251 47 68 or contact.master3d@gmail.com. We're committed to ensuring your satisfaction with every order.
               </p>
             </section>
 
