@@ -14,7 +14,7 @@ export default function ShippingPolicyPage() {
       <main className="flex-1 bg-muted">
         <div className="mx-auto max-w-4xl px-4 py-12 lg:px-8">
           <h1 className="mb-8 font-heading text-4xl font-bold text-foreground">Shipping Policy</h1>
-          
+
           <div className="space-y-8 rounded-lg border border-border bg-card p-6 text-foreground lg:p-8">
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Shipping Coverage</h2>
@@ -29,26 +29,26 @@ export default function ShippingPolicyPage() {
                 Production times vary based on product complexity and current order volume:
               </p>
               <ul className="ml-6 list-disc space-y-1 text-muted-foreground">
-                <li>Standard items: 3-5 business days</li>
-                <li>Complex or large items: 5-7 business days</li>
+                <li>Standard items: 2-5 business days</li>
+                <li>Complex or large items: 5-10 business days</li>
                 <li>Custom designs: Timeline provided at order confirmation</li>
               </ul>
               <p className="mt-3 leading-relaxed text-muted-foreground">
-                Production begins only after payment is confirmed.
+                Production begins ONLY after payment is confirmed.
               </p>
             </section>
 
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Shipping Methods</h2>
               <p className="mb-3 leading-relaxed text-muted-foreground">
-                We use Swiss Post for all deliveries, ensuring reliable and tracked shipping:
+                We use Swiss Post for all deliveries, ensuring reliable shipping:
               </p>
               <ul className="ml-6 list-disc space-y-2 text-muted-foreground">
-                <li><strong>Priority Mail:</strong> 1-2 business days delivery after shipping</li>
-                <li><strong>Standard Mail:</strong> 2-3 business days delivery after shipping</li>
+                <li><strong>Priority Mail:</strong> 1-3 business days delivery after shipping</li>
+                <li><strong>Standard Mail:</strong> 2-4 business days delivery after shipping</li>
               </ul>
               <p className="mt-3 leading-relaxed text-muted-foreground">
-                All shipments include tracking information.
+                All shipments include tracking information after max. 24 hours.
               </p>
             </section>
 
@@ -58,9 +58,9 @@ export default function ShippingPolicyPage() {
                 Shipping costs are calculated based on package size and weight:
               </p>
               <ul className="ml-6 list-disc space-y-1 text-muted-foreground">
-                <li>Small items: CHF 5.00 - 8.00</li>
-                <li>Medium items: CHF 8.00 - 12.00</li>
-                <li>Large items: CHF 12.00 - 20.00</li>
+                <li>Small items: CHF 1.00 - 2.00</li>
+                <li>Medium items: CHF 4.00 - 12.00</li>
+                <li>Large items: CHF 12.00 - Indefinite</li>
               </ul>
               <p className="mt-3 leading-relaxed text-muted-foreground">
                 Exact shipping cost is displayed at checkout. Some products qualify for free shipping.
@@ -70,7 +70,7 @@ export default function ShippingPolicyPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Order Tracking</h2>
               <p className="leading-relaxed text-muted-foreground">
-                Once your order ships, you will receive a tracking number via the contact information provided. You can track your package at <a href="https://track.master3d.net" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">track.master3d.net</a> or through Swiss Post's tracking system.
+                You can track your package at <a href="https://track.master3d.net" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">track.master3d.net</a> . Order will appear after 1 minute.
               </p>
             </section>
 
@@ -96,14 +96,16 @@ export default function ShippingPolicyPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Lost or Delayed Packages</h2>
               <p className="leading-relaxed text-muted-foreground">
-                If your package is significantly delayed or appears to be lost, contact us immediately at +41 78 251 47 68. We will work with Swiss Post to locate your package or arrange a replacement if necessary.
+                If your package is significantly delayed or appears to be lost, contact us immediately at +41 78 251 47 68 or
+                contact.master3d@gmail.com. We will work with Swiss Post to locate your package or arrange a replacement if necessary.
               </p>
             </section>
 
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Damaged in Transit</h2>
               <p className="leading-relaxed text-muted-foreground">
-                If your package arrives damaged, please take photos of both the package and the product before opening completely. Contact us within 48 hours at +41 78 251 47 68 to report the damage. We will arrange a replacement or refund.
+                If your package arrives damaged, please take photos of both the package and the product before opening completely. Contact us within 48 hours at +41 78 251 47 68 or
+                contact.master3d@gmail.com to report the damage. We will arrange a replacement or refund.
               </p>
             </section>
 
@@ -117,7 +119,7 @@ export default function ShippingPolicyPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Holidays and Special Circumstances</h2>
               <p className="leading-relaxed text-muted-foreground">
-                Shipping times may be extended during Swiss public holidays or special circumstances. We will notify you of any expected delays that may affect your order.
+                Shipping times may be extended during Swiss public holidays or special circumstances. We will notify you of any expected delays that may affect your order via an in-site notification.
               </p>
             </section>
 
