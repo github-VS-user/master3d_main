@@ -13,10 +13,11 @@ export const metadata: Metadata = {
 export default async function OrderSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ id?: string }>
+  searchParams: Promise<{ id?: string; payment?: string }>
 }) {
   const params = await searchParams
   const orderNumber = params.id
+  const paymentMethod = params.payment
 
   if (!orderNumber) {
     return (
@@ -71,42 +72,105 @@ export default async function OrderSuccessPage({
           </div>
 
           {/* Payment instructions */}
-          <div className="mt-10 rounded-lg border border-border bg-card p-6">
-            <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-card-foreground">
+          <div className="mt-10 rounded-lg border border-amber-200 bg-amber-50 p-6">
+            <div className="mb-4 rounded-md bg-amber-100 p-3">
+              <p className="text-sm font-semibold text-amber-900">
+                ⚠️ Order Created - Awaiting Payment
+              </p>
+              <p className="mt-1 text-xs text-amber-700">
+                Your order has been placed successfully, but nothing will be shipped until payment is confirmed.
+              </p>
+            </div>
+            
+            <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
               <CreditCard className="h-5 w-5 text-primary" />
               Payment Instructions
             </h2>
-            <div className="mt-4 flex flex-col gap-4">
-              <div className="rounded-md bg-muted p-4">
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-foreground">TWINT</span>
+            <div className="mt-4">
+              {paymentMethod === "twint" && (
+                <div className="rounded-md border-2 border-primary bg-background p-4">
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-5 w-5 text-primary" />
+                    <span className="text-lg font-semibold text-foreground">TWINT</span>
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Send payment to:
+                  </p>
+                  <p className="mt-1 font-mono text-xl font-bold text-foreground">+41 78 251 47 68</p>
+                  <div className="mt-4 rounded-md bg-muted p-3">
+                    <p className="text-xs font-medium text-foreground">
+                      ⚠️ Important: Include this in your payment message:
+                    </p>
+                    <p className="mt-1 font-mono text-sm font-bold text-primary">
+                      Order #{orderNumber}
+                    </p>
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Your order will be processed once payment is received and confirmed (usually within 24 hours).
+                  </p>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {"Send payment to: "}
-                  <span className="font-mono font-semibold text-foreground">+41 78 251 47 68</span>
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {"Include order number #"}
-                  {orderNumber}
-                  {" in the payment message/description."}
-                </p>
-              </div>
-              <div className="rounded-md bg-muted p-4">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-foreground">{"IBAN (Min. CHF 10.00)"}</span>
+              )}
+
+              {paymentMethod === "iban" && (
+                <div className="rounded-md border-2 border-primary bg-background p-4">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-primary" />
+                    <span className="text-lg font-semibold text-foreground">Bank Transfer (IBAN)</span>
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Transfer to:
+                  </p>
+                  <p className="mt-1 font-mono text-xl font-bold text-foreground">CH15 0021 5215 3188 4640 F</p>
+                  <div className="mt-4 rounded-md bg-muted p-3">
+                    <p className="text-xs font-medium text-foreground">
+                      ⚠️ Important: Include this in your payment reference:
+                    </p>
+                    <p className="mt-1 font-mono text-sm font-bold text-primary">
+                      Order #{orderNumber}
+                    </p>
+                  </div>
+                  <div className="mt-4 rounded-md bg-amber-50 border border-amber-200 p-3">
+                    <p className="text-xs font-semibold text-amber-900">Minimum Payment: CHF 10.00</p>
+                    <p className="mt-1 text-xs text-amber-700">
+                      Bank transfers under CHF 10.00 cannot be processed.
+                    </p>
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Your order will be processed once payment is received and confirmed (typically 1-2 business days for bank transfers).
+                  </p>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {"Transfer to: "}
-                  <span className="font-mono font-semibold text-foreground">CH15 0021 5215 3188 4640 F</span>
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {"Include order number #"}
-                  {orderNumber}
-                  {" in the payment reference."}
-                </p>
-              </div>
+              )}
+
+              {paymentMethod === "cash" && (
+                <div className="rounded-md border-2 border-primary bg-background p-4">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-primary" />
+                    <span className="text-lg font-semibold text-foreground">Cash Payment</span>
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    You have selected to pay in cash upon delivery.
+                  </p>
+                  <div className="mt-4 rounded-md bg-muted p-3">
+                    <p className="text-xs font-medium text-foreground">
+                      📍 Payment on Delivery
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Please have the exact amount ready when receiving your order.
+                    </p>
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Your order will be prepared and we will contact you to arrange delivery and cash payment.
+                  </p>
+                </div>
+              )}
+
+              {!paymentMethod && (
+                <div className="rounded-md bg-muted p-4">
+                  <p className="text-sm text-muted-foreground">
+                    Payment method not specified. Please contact support with your order number.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
