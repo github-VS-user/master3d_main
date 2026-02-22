@@ -25,7 +25,8 @@ export function Navbar() {
             alt="Master 3D logo"
             width={120}
             height={48}
-            className="h-10 w-auto rounded"
+            className="h-10 rounded"
+            style={{ width: 'auto', height: '2.5rem' }}
             priority
           />
         </Link>

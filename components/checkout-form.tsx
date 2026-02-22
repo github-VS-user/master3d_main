@@ -178,7 +178,7 @@ export function CheckoutForm() {
         console.error('[v0] Failed to send confirmation email:', error)
       }
       
-      router.push(`/order-success?id=${data.order_number}`)
+      router.push(`/order-success?id=${data.order_number}&payment=${paymentMethod}`)
     } catch {
       toast.error("Failed to place order. Please try again.")
     } finally {
