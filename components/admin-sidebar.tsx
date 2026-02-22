@@ -52,7 +52,7 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
       <div className="relative border-b border-border bg-gradient-to-br from-primary/5 to-transparent px-5 py-6">
         {/* Mobile close button */}
         <button
-          onClick={onClose}
+          onClick={() => setIsOpen(false)}
           className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:hidden"
           aria-label="Close menu"
         >
