@@ -141,28 +141,53 @@ export default async function OrderSuccessPage({
                   </div>
                 )}
 
-                {paymentMethod === "cash" && (
-                  <div className="rounded-md border-2 border-primary bg-background p-4">
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="h-5 w-5 text-primary" />
-                      <span className="text-lg font-semibold text-foreground">Cash Payment</span>
+              {paymentMethod === "cash" && (
+                <div className="rounded-md border-2 border-primary bg-background p-4">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-primary" />
+                    <span className="text-lg font-semibold text-foreground">Cash Payment</span>
+                  </div>
+                  <p className="mt-3 text-sm text-foreground font-medium">
+                    You have selected to pay in cash upon delivery.
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Order Amount: <span className="font-bold text-foreground">CHF {order?.total.toFixed(2)}</span>
+                  </p>
+                  
+                  <div className="mt-4 space-y-3">
+                    <div className="rounded-md bg-blue-50 border border-blue-200 p-3">
+                      <p className="text-xs font-semibold text-blue-900">
+                        📞 We will contact you shortly
+                      </p>
+                      <p className="mt-1 text-xs text-blue-700">
+                        We will call you at <span className="font-semibold">{order?.customer_phone || 'your provided number'}</span> to arrange delivery time and location.
+                      </p>
                     </div>
-                    <p className="mt-3 text-sm text-muted-foreground">
-                      You have selected to pay in cash upon delivery.
-                    </p>
-                    <div className="mt-4 rounded-md bg-muted p-3">
+                    
+                    <div className="rounded-md bg-muted p-3">
                       <p className="text-xs font-medium text-foreground">
-                        📍 Payment on Delivery
+                        💵 Payment on Delivery
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Please have the exact amount ready when receiving your order.
+                        Please have the <span className="font-semibold text-foreground">exact amount (CHF {order?.total.toFixed(2)})</span> ready in cash when receiving your order.
                       </p>
                     </div>
-                    <p className="mt-3 text-xs text-muted-foreground">
-                      Your order will be prepared and we will contact you to arrange delivery and cash payment.
-                    </p>
+                    
+                    <div className="rounded-md bg-green-50 border border-green-200 p-3">
+                      <p className="text-xs font-semibold text-green-900">
+                        ✓ Special FRIENDS123 Promotion
+                      </p>
+                      <p className="mt-1 text-xs text-green-700">
+                        As a friend of Master 3D, you can pay in cash directly upon delivery in the Zürich area.
+                      </p>
+                    </div>
                   </div>
-                )}
+                  
+                  <p className="mt-4 text-xs text-muted-foreground">
+                    Your order will be prepared immediately. We typically deliver within 1-3 business days in the Zürich area.
+                  </p>
+                </div>
+              )}
 
                 {!paymentMethod && (
                   <div className="rounded-md bg-muted p-4">
