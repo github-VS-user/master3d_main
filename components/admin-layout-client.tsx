@@ -28,14 +28,21 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
     e.preventDefault()
     setError("")
 
-    // Check against ADMIN_PSW environment variable
-    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PSW || "admin123"
+    console.log("[v0] Attempting login with password:", password)
+    console.log("[v0] Environment variable NEXT_PUBLIC_ADMIN_PSW:", process.env.NEXT_PUBLIC_ADMIN_PSW)
+    
+    // Check against ADMIN_PSW - the password should be "password"
+    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PSW || "password"
+    
+    console.log("[v0] Expected password:", adminPassword)
     
     if (password === adminPassword) {
+      console.log("[v0] Login successful")
       sessionStorage.setItem(ADMIN_PASSWORD_KEY, "true")
       setAuthenticated(true)
       router.refresh()
     } else {
+      console.log("[v0] Login failed - password mismatch")
       setError("Incorrect password")
     }
   }
