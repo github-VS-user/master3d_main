@@ -18,7 +18,8 @@ export function Footer() {
               alt="Master 3D"
               width={100}
               height={40}
-              className="h-10 w-auto rounded"
+              className="h-10 rounded"
+              style={{ width: 'auto', height: '2.5rem' }}
             />
             <span className="text-sm text-card/60">{t("footer.tagline")}</span>
           </div>
