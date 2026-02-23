@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { IntroAnimation } from '@/components/intro-animation'
+import { CookieConsent } from '@/components/cookie-consent'
 import { LanguageProvider } from '@/lib/language-context'
 
 import './globals.css'
@@ -29,6 +30,7 @@ export default function RootLayout({
         <LanguageProvider>
           <IntroAnimation />
           {children}
+          <CookieConsent />
           <Toaster position="top-right" richColors />
         </LanguageProvider>
       </body>
