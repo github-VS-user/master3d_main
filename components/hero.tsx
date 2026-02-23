@@ -10,6 +10,13 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-foreground">
+      {/* Free shipping banner */}
+      <div className="border-b border-card/10 bg-primary/15 px-4 py-2">
+        <p className="text-center text-sm font-semibold text-card">
+          Free Shipping on Orders CHF 20+
+        </p>
+      </div>
+      
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-6 px-4 py-12 sm:gap-8 sm:py-16 lg:flex-row lg:gap-12 lg:px-8 lg:py-24">
         {/* Text */}
         <div className="flex flex-1 flex-col items-center gap-4 text-center sm:gap-6 lg:items-start lg:text-left">

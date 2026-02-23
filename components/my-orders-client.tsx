@@ -36,6 +36,25 @@ export function MyOrdersClient() {
   const [searched, setSearched] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [autoSearched, setAutoSearched] = useState(false)
+
+  // Auto-load saved phone number and search
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !autoSearched) {
+      const savedPhone = localStorage.getItem('master3d_customer_phone')
+      if (savedPhone) {
+        setPhone(savedPhone)
+        setAutoSearched(true)
+        // Auto-search with saved phone after a short delay
+        setTimeout(() => {
+          const form = document.querySelector('form')
+          if (form) {
+            form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+          }
+        }, 300)
+      }
+    }
+  }, [autoSearched])
 
   // Auto-search if order number is in URL
   useEffect(() => {
@@ -43,6 +62,7 @@ export function MyOrdersClient() {
     if (orderFromUrl) {
       setSearchType('order')
       setOrderNumber(orderFromUrl)
+      setAutoSearched(true)
       // Trigger search automatically
       setTimeout(() => {
         const form = document.querySelector('form')
