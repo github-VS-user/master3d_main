@@ -85,8 +85,19 @@ export function clearCart() {
   notifyListeners()
 }
 
+export function getCartSubtotal(): number {
+  return cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+}
+
+export function getCartShipping(): number {
+  const subtotal = getCartSubtotal()
+  // Free shipping if subtotal is 20 CHF or more
+  if (subtotal >= 20) return 0
+  return cart.reduce((sum, item) => sum + item.shipping_cost, 0)
+}
+
 export function getCartTotal(): number {
-  return cart.reduce((sum, item) => sum + item.price * item.quantity + item.shipping_cost, 0)
+  return getCartSubtotal() + getCartShipping()
 }
 
 export function getCartCount(): number {

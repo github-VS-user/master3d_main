@@ -24,7 +24,7 @@ interface PromoCode {
 }
 
 export function CheckoutForm() {
-  const { items, count, total, updateQuantity, removeFromCart, clearCart } = useCart()
+  const { items, count, total, subtotal, shipping, updateQuantity, removeFromCart, clearCart } = useCart()
   const router = useRouter()
   const [step, setStep] = useState<"details" | "payment">("details")
   const [name, setName] = useState("")
@@ -48,6 +48,7 @@ export function CheckoutForm() {
 
   const finalTotal = Math.max(0, total - discount)
   const canUseCash = appliedPromo?.code === "FRIENDS123"
+  const hasFreeShipping = subtotal >= 20
 
   if (count === 0) {
     return (
@@ -160,6 +161,12 @@ export function CheckoutForm() {
       if (!res.ok) throw new Error("Order submission failed")
 
       const data = await res.json()
+      
+      // Save customer phone for easy order tracking
+      if (typeof window !== 'undefined' && phone) {
+        localStorage.setItem('master3d_customer_phone', phone)
+      }
+      
       clearCart()
       
       // Send confirmation email
@@ -232,11 +239,12 @@ export function CheckoutForm() {
                     {item.name}
                     {item.color && <span className="ml-2 text-sm font-normal text-muted-foreground">({item.color})</span>}
                   </h3>
-                  <p className="text-sm text-muted-foreground">CHF {Number(item.price).toFixed(2)} each</p>
-                  <p className="text-xs text-muted-foreground">
-                    Shipping: {item.shipping_time}
-                    {item.shipping_cost > 0 ? ` (+CHF ${Number(item.shipping_cost).toFixed(2)})` : " (Free)"}
-                  </p>
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-medium text-card-foreground">CHF {Number(item.price).toFixed(2)} each</p>
+                    <p className="text-xs text-muted-foreground">
+                      {item.shipping_time} • {item.shipping_cost > 0 ? `CHF ${Number(item.shipping_cost).toFixed(2)} shipping/item` : "Free shipping"}
+                    </p>
+                  </div>
                   <div className="mt-auto flex items-center gap-2">
                     <button
                       onClick={() => updateQuantity(`${item.id}-${item.color || idx}`, item.quantity - 1)}
@@ -262,8 +270,13 @@ export function CheckoutForm() {
                     </button>
                   </div>
                 </div>
-                <div className="text-right font-semibold text-card-foreground">
-                  CHF {(Number(item.price) * item.quantity + Number(item.shipping_cost)).toFixed(2)}
+                <div className="flex flex-col items-end justify-center gap-1 text-right">
+                  <p className="text-lg font-bold text-card-foreground">
+                    CHF {(Number(item.price) * item.quantity + Number(item.shipping_cost)).toFixed(2)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    (CHF {Number(item.price * item.quantity).toFixed(2)} + CHF {Number(item.shipping_cost).toFixed(2)} ship)
+                  </p>
                 </div>
               </div>
             ))}
@@ -296,14 +309,21 @@ export function CheckoutForm() {
                   type="text"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      handleApplyPromo()
+                    }
+                  }}
                   placeholder="Enter promo code"
-                  className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={step === "payment"}
+                  autoComplete="off"
                 />
                 <button
                   onClick={handleApplyPromo}
                   disabled={checkingPromo || !promoCode.trim() || step === "payment"}
-                  className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                  className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {checkingPromo ? "Checking..." : "Apply"}
                 </button>
@@ -314,9 +334,22 @@ export function CheckoutForm() {
           {/* Total */}
           <div className="mt-4 rounded-lg bg-muted px-4 py-3 space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Subtotal</span>
-              <span className="font-medium text-foreground">CHF {total.toFixed(2)}</span>
+              <span className="text-muted-foreground">Subtotal (Products)</span>
+              <span className="font-medium text-foreground">CHF {subtotal.toFixed(2)}</span>
             </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Shipping</span>
+              {hasFreeShipping ? (
+                <span className="font-semibold text-green-600">FREE</span>
+              ) : (
+                <span className="font-medium text-foreground">CHF {shipping.toFixed(2)}</span>
+              )}
+            </div>
+            {hasFreeShipping && (
+              <div className="rounded-md bg-green-50 border border-green-200 px-3 py-2">
+                <p className="text-xs font-semibold text-green-700">Free shipping unlocked! Orders over CHF 20 ship free.</p>
+              </div>
+            )}
             {discount > 0 && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Discount</span>
