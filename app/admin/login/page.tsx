@@ -41,7 +41,8 @@ export default function AdminLoginPage() {
             alt="Master 3D"
             width={120}
             height={48}
-            className="h-12 w-auto rounded"
+            className="h-12 rounded"
+            style={{ width: 'auto', height: '3rem' }}
           />
           <div className="w-full rounded-lg border border-border bg-card p-6 shadow-sm">
             <h1 className="font-heading text-xl font-bold text-card-foreground">Admin Login</h1>
