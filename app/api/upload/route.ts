@@ -1,50 +1,35 @@
-import { put } from '@vercel/blob'
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
 import { type NextRequest, NextResponse } from 'next/server'
 
-export const runtime = 'nodejs'
-export const maxDuration = 30
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const body = (await request.json()) as HandleUploadBody
 
-// This is the key fix - Next.js default body limit is 4MB, override it
-export const config = {
-  api: {
-    bodyParser: false,
-    responseLimit: false,
-  },
-}
-
-export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData()
-    const file = formData.get('file') as File
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async (pathname) => {
+        // Validate the file is an image
+        const ext = pathname.split('.').pop()?.toLowerCase()
+        const allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif']
+        if (!allowed.includes(ext ?? '')) {
+          throw new Error('Only image files are allowed')
+        }
 
-    if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
-    }
-
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 })
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File size must be less than 10MB' }, { status: 400 })
-    }
-
-    const timestamp = Date.now()
-    const extension = file.name.split('.').pop()
-    const filename = `products/${timestamp}-${Math.random().toString(36).substring(7)}.${extension}`
-
-    const blob = await put(filename, file, {
-      access: 'public',
+        return {
+          allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'],
+          maximumSizeInBytes: 10 * 1024 * 1024, // 10 MB
+          addRandomSuffix: true,
+          tokenPayload: JSON.stringify({ folder: 'products' }),
+        }
+      },
+      onUploadCompleted: async ({ blob }) => {
+        console.log('Blob upload completed:', blob.url)
+      },
     })
 
-    return NextResponse.json({
-      url: blob.url,
-      filename: file.name,
-      size: file.size,
-      type: file.type,
-    })
+    return NextResponse.json(jsonResponse)
   } catch (error) {
-    console.error('[v0] Upload error:', error)
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    return NextResponse.json({ error: (error as Error).message }, { status: 400 })
   }
 }
