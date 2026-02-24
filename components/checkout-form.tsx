@@ -24,7 +24,7 @@ interface PromoCode {
 }
 
 export function CheckoutForm() {
-  const { items, count, total, subtotal, shipping, updateQuantity, removeFromCart, clearCart } = useCart()
+  const { items, count, total, subtotal, shipping, shippingBreakdown, updateQuantity, removeFromCart, clearCart } = useCart()
   const router = useRouter()
   const [step, setStep] = useState<"details" | "payment">("details")
   const [name, setName] = useState("")
@@ -48,7 +48,7 @@ export function CheckoutForm() {
 
   const finalTotal = Math.max(0, total - discount)
   const canUseCash = appliedPromo?.code === "FRIENDS123"
-  const hasFreeShipping = subtotal >= 20
+  const { hasFreeShipping, hasGroupedDiscount, groupedCount, groupedSaving } = shippingBreakdown
 
   if (count === 0) {
     return (
@@ -250,92 +250,89 @@ export function CheckoutForm() {
   }
 
   return (
-    <div className="mt-8 space-y-6">
+    <div className="mt-6 space-y-4 sm:mt-8 sm:space-y-6">
       {/* Progress indicator */}
       <div className="flex items-center justify-center gap-2">
-        <div className={`flex items-center gap-2 rounded-full px-4 py-2 ${step === "details" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-          {step === "payment" && <Check className="h-4 w-4" />}
-          <span className="text-sm font-medium">1. Shipping Details</span>
+        <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:gap-2 sm:px-4 sm:py-2 ${step === "details" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+          {step === "payment" && <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+          <span className="text-xs font-medium sm:text-sm">1. Details</span>
         </div>
-        <ArrowRight className="h-4 w-4 text-muted-foreground" />
-        <div className={`flex items-center gap-2 rounded-full px-4 py-2 ${step === "payment" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-          <span className="text-sm font-medium">2. Payment Method</span>
+        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground sm:h-4 sm:w-4" />
+        <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:gap-2 sm:px-4 sm:py-2 ${step === "payment" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+          <span className="text-xs font-medium sm:text-sm">2. Payment</span>
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-5">
+      <div className="grid gap-6 lg:grid-cols-5">
         {/* Cart items */}
         <div className="lg:col-span-3">
           <h2 className="font-heading text-lg font-semibold text-foreground">
             Cart ({count} {count === 1 ? "item" : "items"})
           </h2>
-          <div className="mt-4 flex flex-col gap-4">
-            {items.map((item, idx) => (
-              <div
-                key={`${item.id}-${item.color || idx}`}
-                className="flex gap-4 rounded-lg border border-border bg-card p-4"
-              >
-                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-muted">
-                  {item.image_url ? (
-                    <Image
-                      src={item.image_url}
-                      alt={item.name}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-muted-foreground">
-                      <ShoppingCart className="h-6 w-6" />
+          <div className="mt-4 flex flex-col gap-3">
+            {items.map((item, idx) => {
+              const isCheapShipping = Number(item.shipping_cost) === 1
+              return (
+                <div
+                  key={`${item.id}-${item.color || idx}`}
+                  className="flex gap-3 rounded-lg border border-border bg-card p-3 sm:gap-4 sm:p-4"
+                >
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted sm:h-20 sm:w-20">
+                    {item.image_url ? (
+                      <Image src={item.image_url} alt={item.name} fill className="object-cover" sizes="80px" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-muted-foreground">
+                        <ShoppingCart className="h-5 w-5" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="text-sm font-semibold text-card-foreground leading-tight">
+                        {item.name}
+                        {item.color && <span className="ml-1 font-normal text-muted-foreground">({item.color})</span>}
+                      </h3>
+                      <p className="shrink-0 text-base font-bold text-card-foreground">
+                        CHF {(Number(item.price) * item.quantity).toFixed(2)}
+                      </p>
                     </div>
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col gap-1">
-                  <h3 className="font-semibold text-card-foreground">
-                    {item.name}
-                    {item.color && <span className="ml-2 text-sm font-normal text-muted-foreground">({item.color})</span>}
-                  </h3>
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-medium text-card-foreground">CHF {Number(item.price).toFixed(2)} each</p>
                     <p className="text-xs text-muted-foreground">
-                      {item.shipping_time} • {item.shipping_cost > 0 ? `CHF ${Number(item.shipping_cost).toFixed(2)} shipping/item` : "Free shipping"}
+                      CHF {Number(item.price).toFixed(2)} each
+                      {isCheapShipping && hasGroupedDiscount
+                        ? <span className="ml-1 text-green-600 font-medium">• shipping grouped</span>
+                        : item.shipping_cost > 0
+                          ? <span> • +CHF {Number(item.shipping_cost).toFixed(2)} ship</span>
+                          : <span> • free shipping</span>
+                      }
                     </p>
-                  </div>
-                  <div className="mt-auto flex items-center gap-2">
-                    <button
-                      onClick={() => updateQuantity(`${item.id}-${item.color || idx}`, item.quantity - 1)}
-                      className="flex h-7 w-7 items-center justify-center rounded border border-border text-foreground transition-colors hover:bg-muted"
-                      disabled={step === "payment"}
-                    >
-                      <Minus className="h-3.5 w-3.5" />
-                    </button>
-                    <span className="w-8 text-center text-sm font-medium text-foreground">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(`${item.id}-${item.color || idx}`, item.quantity + 1)}
-                      className="flex h-7 w-7 items-center justify-center rounded border border-border text-foreground transition-colors hover:bg-muted"
-                      disabled={step === "payment"}
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                    </button>
-                    <button
-                      onClick={() => removeFromCart(`${item.id}-${item.color || idx}`)}
-                      className="ml-auto text-destructive transition-colors hover:text-destructive/80"
-                      disabled={step === "payment"}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <button
+                        onClick={() => updateQuantity(`${item.id}-${item.color || idx}`, item.quantity - 1)}
+                        className="flex h-7 w-7 items-center justify-center rounded border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+                        disabled={step === "payment"}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </button>
+                      <span className="w-6 text-center text-sm font-medium text-foreground">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(`${item.id}-${item.color || idx}`, item.quantity + 1)}
+                        className="flex h-7 w-7 items-center justify-center rounded border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+                        disabled={step === "payment"}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={() => removeFromCart(`${item.id}-${item.color || idx}`)}
+                        className="ml-auto text-destructive/70 transition-colors hover:text-destructive disabled:opacity-40"
+                        disabled={step === "payment"}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-end justify-center gap-1 text-right">
-                  <p className="text-lg font-bold text-card-foreground">
-                    CHF {(Number(item.price) * item.quantity + Number(item.shipping_cost)).toFixed(2)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    (CHF {Number(item.price * item.quantity).toFixed(2)} + CHF {Number(item.shipping_cost).toFixed(2)} ship)
-                  </p>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Promo Code */}
@@ -390,7 +387,7 @@ export function CheckoutForm() {
           {/* Total */}
           <div className="mt-4 rounded-lg bg-muted px-4 py-3 space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Subtotal (Products)</span>
+              <span className="text-muted-foreground">Products</span>
               <span className="font-medium text-foreground">CHF {subtotal.toFixed(2)}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
@@ -401,32 +398,45 @@ export function CheckoutForm() {
                 <span className="font-medium text-foreground">CHF {shipping.toFixed(2)}</span>
               )}
             </div>
+
+            {/* Free shipping banner */}
             {hasFreeShipping && (
               <div className="rounded-md bg-green-50 border border-green-200 px-3 py-2">
-                <p className="text-xs font-semibold text-green-700">Free shipping unlocked! Orders over CHF 20 ship free.</p>
+                <p className="text-xs font-semibold text-green-700">Free shipping — orders over CHF 20 ship free.</p>
               </div>
             )}
+
+            {/* Grouped shipping discount banner */}
+            {!hasFreeShipping && hasGroupedDiscount && (
+              <div className="rounded-md bg-blue-50 border border-blue-200 px-3 py-2">
+                <p className="text-xs font-semibold text-blue-800">
+                  Shipping deal applied: {groupedCount} small items share CHF 1 shipping instead of CHF {groupedCount}.00.
+                </p>
+                <p className="mt-0.5 text-xs text-blue-600">You save CHF {groupedSaving.toFixed(2)} on shipping.</p>
+              </div>
+            )}
+
             {discount > 0 && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Discount</span>
+                <span className="text-muted-foreground">Promo discount</span>
                 <span className="font-medium text-primary">-CHF {discount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex items-center justify-between border-t border-border pt-2">
-              <span className="font-heading text-lg font-bold text-foreground">Total</span>
-              <span className="font-heading text-xl font-bold text-primary">CHF {finalTotal.toFixed(2)}</span>
+              <span className="font-heading text-base font-bold text-foreground sm:text-lg">Total</span>
+              <span className="font-heading text-lg font-bold text-primary sm:text-xl">CHF {finalTotal.toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         {/* Form */}
         <div className="lg:col-span-2">
-          <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
+          <div className="rounded-lg border border-border bg-card p-4">
             {step === "details" ? (
               <>
-                <h2 className="font-heading text-base font-semibold text-card-foreground sm:text-lg">Shipping Details</h2>
-                <p className="mt-1 text-xs text-muted-foreground">Shipping to Switzerland only</p>
-                <div className="mt-4 flex flex-col gap-3 sm:mt-5 sm:gap-4">
+                <h2 className="font-heading text-base font-semibold text-card-foreground">Shipping Details</h2>
+                <p className="mt-1 text-xs text-muted-foreground">Switzerland delivery only</p>
+                <div className="mt-4 flex flex-col gap-3">
                   <div>
                     <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-card-foreground">Full Name</label>
                     <input
