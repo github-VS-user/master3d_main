@@ -106,22 +106,24 @@ export function AdminProductsClient({ initialProducts }: { initialProducts: Prod
     }
 
     setUploading(true)
-    const formData = new FormData()
-    formData.append('file', file)
 
     try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
+      const { upload } = await import('@vercel/blob/client')
+      const timestamp = Date.now()
+      const ext = file.name.split('.').pop()
+      const filename = `products/${timestamp}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+
+      const blob = await upload(filename, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload',
       })
 
-      if (!response.ok) {
-        throw new Error('Upload failed')
-      }
-
-      const data = await response.json()
       // Add to images array
-      setForm({ ...form, images: [...form.images, data.url], image_url: form.images.length === 0 ? data.url : form.image_url })
+      setForm(prev => ({
+        ...prev,
+        images: [...prev.images, blob.url],
+        image_url: prev.images.length === 0 ? blob.url : prev.image_url,
+      }))
       toast.success('Image uploaded')
     } catch (error) {
       toast.error('Failed to upload image')
