@@ -123,33 +123,26 @@ export function ProductCard({ product }: { product: Product }) {
         {/* Color Selection */}
         {availableColors.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">{t("productCard.color")}:</p>
+            <p className="mb-2 text-xs font-medium text-muted-foreground">
+              {t("productCard.color")}: <span className="text-foreground font-semibold">{selectedColor}</span>
+            </p>
             <div className="flex flex-wrap gap-2">
               {availableColors.map((color) => (
                 <button
                   key={color}
                   type="button"
                   onClick={() => setSelectedColor(color)}
-                  className={`group/color relative flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all ${
-                    selectedColor === color
-                      ? "border-primary scale-110"
-                      : "border-border hover:border-muted-foreground hover:scale-105"
-                  }`}
                   title={color}
-                >
-                  <div
-                    className="h-6 w-6 rounded-full"
-                    style={{
-                      backgroundColor: COLOR_HEX_MAP[color] || "#ccc",
-                      ...(color === "White" && { border: "1px solid #e5e7eb" })
-                    }}
-                  />
-                  {selectedColor === color && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="h-2 w-2 rounded-full bg-primary" />
-                    </div>
-                  )}
-                </button>
+                  className={`relative h-9 w-9 rounded-full border-[3px] transition-all hover:scale-110 ${
+                    selectedColor === color
+                      ? "border-primary scale-110 shadow-md"
+                      : "border-transparent hover:border-muted-foreground"
+                  }`}
+                  style={{
+                    backgroundColor: COLOR_HEX_MAP[color] || "#ccc",
+                    ...(color === "White" && { outline: "1px solid #e5e7eb" })
+                  }}
+                />
               ))}
             </div>
           </div>
