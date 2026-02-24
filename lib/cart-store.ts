@@ -89,11 +89,51 @@ export function getCartSubtotal(): number {
   return cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 }
 
-export function getCartShipping(): number {
+export interface ShippingBreakdown {
+  total: number
+  hasFreeShipping: boolean
+  hasGroupedDiscount: boolean
+  /** How many CHF-1 items are grouped (paying CHF 1 flat instead of per-item) */
+  groupedCount: number
+  /** How much was saved by grouping */
+  groupedSaving: number
+}
+
+export function getShippingBreakdown(): ShippingBreakdown {
   const subtotal = getCartSubtotal()
-  // Free shipping if subtotal is 20 CHF or more
-  if (subtotal >= 20) return 0
-  return cart.reduce((sum, item) => sum + item.shipping_cost, 0)
+
+  if (subtotal >= 20) {
+    return { total: 0, hasFreeShipping: true, hasGroupedDiscount: false, groupedCount: 0, groupedSaving: 0 }
+  }
+
+  // Separate items into CHF-1 shipping and others
+  // Each unit of quantity counts as one "item" for the grouping rule
+  let chf1Units = 0
+  let otherShipping = 0
+
+  for (const item of cart) {
+    if (Number(item.shipping_cost) === 1) {
+      chf1Units += item.quantity
+    } else {
+      otherShipping += Number(item.shipping_cost) * item.quantity
+    }
+  }
+
+  // First 3 CHF-1 units → pay CHF 1 flat; units 4+ pay CHF 1 each normally
+  const groupedCount = Math.min(chf1Units, 3)
+  const normalChf1Units = Math.max(0, chf1Units - 3)
+  const chf1Shipping = groupedCount > 0 ? 1 : 0
+  const chf1NormalShipping = normalChf1Units * 1
+
+  const total = chf1Shipping + chf1NormalShipping + otherShipping
+  const groupedSaving = groupedCount > 1 ? groupedCount - 1 : 0 // saved vs paying per-item
+  const hasGroupedDiscount = groupedCount >= 2
+
+  return { total, hasFreeShipping: false, hasGroupedDiscount, groupedCount, groupedSaving }
+}
+
+export function getCartShipping(): number {
+  return getShippingBreakdown().total
 }
 
 export function getCartTotal(): number {
