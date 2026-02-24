@@ -16,10 +16,10 @@ export function Footer() {
             <Image
               src="/images/master3d_logo.jpg"
               alt="Master 3D"
-              width={100}
-              height={40}
-              className="h-10 rounded"
-              style={{ width: 'auto', height: '2.5rem' }}
+              width={160}
+              height={64}
+              className="rounded"
+              style={{ width: 'auto', height: '4rem' }}
             />
             <span className="text-sm text-card/60">{t("footer.tagline")}</span>
           </div>

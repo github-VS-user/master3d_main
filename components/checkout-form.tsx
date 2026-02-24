@@ -70,25 +70,56 @@ export function CheckoutForm() {
 
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) return
-    
+
     setCheckingPromo(true)
     try {
       const supabase = createClient()
       const { data, error } = await supabase
         .from("promo_codes")
-        .select("*")
+        .select("*, promo_code_uses(id, device_fingerprint, ip_address, customer_name)")
         .eq("code", promoCode.toUpperCase())
         .eq("is_active", true)
         .single()
 
       if (error || !data) {
-        toast.error("Invalid promo code")
+        toast.error("Invalid or inactive promo code")
         setAppliedPromo(null)
         return
       }
 
+      // Check global usage limit
+      if (data.max_uses !== null && data.use_count >= data.max_uses) {
+        toast.error("This promo code has reached its usage limit")
+        setAppliedPromo(null)
+        return
+      }
+
+      // Check per-user limit using device fingerprint (canvas + screen + timezone)
+      if (data.max_uses_per_user !== null) {
+        const fp = [
+          navigator.userAgent,
+          screen.width,
+          screen.height,
+          Intl.DateTimeFormat().resolvedOptions().timeZone,
+        ].join("|")
+        const fingerprint = btoa(fp).slice(0, 64)
+
+        const uses = (data.promo_code_uses || []) as Array<{ device_fingerprint: string; customer_name: string }>
+        const userUses = uses.filter(
+          (u) => u.device_fingerprint === fingerprint || (name && u.customer_name === name)
+        ).length
+
+        if (userUses >= data.max_uses_per_user) {
+          toast.error("You have already used this promo code the maximum number of times")
+          setAppliedPromo(null)
+          return
+        }
+      }
+
       setAppliedPromo(data)
-      toast.success(`Promo code applied: ${data.discount_type === "percentage" ? `${data.discount_value}%` : `CHF ${data.discount_value}`} off`)
+      toast.success(
+        `Promo code applied: ${data.discount_type === "percentage" ? `${data.discount_value}% off` : `CHF ${data.discount_value} off`}`
+      )
     } catch {
       toast.error("Failed to validate promo code")
       setAppliedPromo(null)
@@ -165,6 +196,31 @@ export function CheckoutForm() {
       // Save customer phone for easy order tracking
       if (typeof window !== 'undefined' && phone) {
         localStorage.setItem('master3d_customer_phone', phone)
+      }
+
+      // Record promo code usage for abuse prevention
+      if (appliedPromo) {
+        try {
+          const supabase = createClient()
+          const fp = [
+            navigator.userAgent,
+            screen.width,
+            screen.height,
+            Intl.DateTimeFormat().resolvedOptions().timeZone,
+          ].join("|")
+          const fingerprint = btoa(fp).slice(0, 64)
+
+          await supabase.from("promo_code_uses").insert({
+            promo_code_id: appliedPromo.id,
+            device_fingerprint: fingerprint,
+            customer_name: name,
+          })
+
+          // Increment use_count
+          await supabase.rpc("increment_promo_use_count", { promo_id: appliedPromo.id })
+        } catch (err) {
+          console.error("[v0] Failed to record promo usage:", err)
+        }
       }
       
       clearCart()
