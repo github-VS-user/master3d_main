@@ -20,17 +20,15 @@ interface Product {
 }
 
 const COLOR_HEX_MAP: Record<string, string> = {
-  Orange: "#FF6B00",
   White: "#FFFFFF",
   Black: "#000000",
   Red: "#EF4444",
   Blue: "#3B82F6",
   Green: "#10B981",
   Yellow: "#F59E0B",
-  Purple: "#8B5CF6",
-  Pink: "#EC4899",
-  Gray: "#6B7280",
   "Surprise Me!": "#FF1493",
+  "Bi-Color Blue": "#0040e5",
+  "Rainbow": "#c2ff7e",
 }
 
 export function ProductCard({ product }: { product: Product }) {
@@ -98,9 +96,8 @@ export function ProductCard({ product }: { product: Product }) {
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`h-1.5 rounded-full transition-all ${
-                        index === currentImageIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"
-                      }`}
+                      className={`h-1.5 rounded-full transition-all ${index === currentImageIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"
+                        }`}
                       aria-label={`View image ${index + 1}`}
                     />
                   ))}
@@ -133,11 +130,10 @@ export function ProductCard({ product }: { product: Product }) {
                   type="button"
                   onClick={() => setSelectedColor(color)}
                   title={color}
-                  className={`relative h-9 w-9 rounded-full border-[3px] transition-all hover:scale-110 ${
-                    selectedColor === color
+                  className={`relative h-9 w-9 rounded-full border-[3px] transition-all hover:scale-110 ${selectedColor === color
                       ? "border-primary scale-110 shadow-md"
                       : "border-transparent hover:border-muted-foreground"
-                  }`}
+                    }`}
                   style={{
                     backgroundColor: COLOR_HEX_MAP[color] || "#ccc",
                     ...(color === "White" && { outline: "1px solid #e5e7eb" })
