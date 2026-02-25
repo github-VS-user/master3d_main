@@ -36,6 +36,7 @@ let cart: CartItem[] = loadCart()
 const listeners: Set<CartListener> = new Set()
 
 function notifyListeners() {
+  _cachedBreakdown = null // invalidate so getShippingBreakdown recomputes
   listeners.forEach((listener) => listener())
 }
 
@@ -99,15 +100,16 @@ export interface ShippingBreakdown {
   groupedSaving: number
 }
 
-export function getShippingBreakdown(): ShippingBreakdown {
+// Cached breakdown — only recomputed when cart changes (avoids useSyncExternalStore infinite loop)
+let _cachedBreakdown: ShippingBreakdown | null = null
+
+function computeShippingBreakdown(): ShippingBreakdown {
   const subtotal = getCartSubtotal()
 
   if (subtotal >= 20) {
     return { total: 0, hasFreeShipping: true, hasGroupedDiscount: false, groupedCount: 0, groupedSaving: 0 }
   }
 
-  // Separate items into CHF-1 shipping and others
-  // Each unit of quantity counts as one "item" for the grouping rule
   let chf1Units = 0
   let otherShipping = 0
 
@@ -119,17 +121,22 @@ export function getShippingBreakdown(): ShippingBreakdown {
     }
   }
 
-  // First 3 CHF-1 units → pay CHF 1 flat; units 4+ pay CHF 1 each normally
   const groupedCount = Math.min(chf1Units, 3)
   const normalChf1Units = Math.max(0, chf1Units - 3)
   const chf1Shipping = groupedCount > 0 ? 1 : 0
   const chf1NormalShipping = normalChf1Units * 1
-
   const total = chf1Shipping + chf1NormalShipping + otherShipping
-  const groupedSaving = groupedCount > 1 ? groupedCount - 1 : 0 // saved vs paying per-item
+  const groupedSaving = groupedCount > 1 ? groupedCount - 1 : 0
   const hasGroupedDiscount = groupedCount >= 2
 
   return { total, hasFreeShipping: false, hasGroupedDiscount, groupedCount, groupedSaving }
+}
+
+export function getShippingBreakdown(): ShippingBreakdown {
+  if (!_cachedBreakdown) {
+    _cachedBreakdown = computeShippingBreakdown()
+  }
+  return _cachedBreakdown
 }
 
 export function getCartShipping(): number {
