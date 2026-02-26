@@ -4,14 +4,14 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { Package, ShoppingBag, LogOut, LayoutDashboard, X, Tag, Menu } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Package, ShoppingBag, LogOut, LayoutDashboard, X, Tag, Menu, Truck } from "lucide-react"
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { href: "/admin/promo-codes", label: "Promo Codes", icon: Tag },
+  { href: "/admin/tracking", label: "Tracking", icon: Truck },
 ]
 
 export function AdminSidebar({ children }: { children: React.ReactNode }) {
