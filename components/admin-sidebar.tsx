@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { Package, ShoppingBag, LogOut, LayoutDashboard, X, Tag, Menu, Truck } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },

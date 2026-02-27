@@ -269,6 +269,10 @@ export function CheckoutForm() {
           <h2 className="font-heading text-lg font-semibold text-foreground">
             Cart ({count} {count === 1 ? "item" : "items"})
           </h2>
+          <p className="mt-1 flex items-start gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            <span className="mt-0.5 shrink-0">&#9432;</span>
+            <span>Product images may show a different colour. The colour you will receive is the one you selected, not the one shown in the image. This applies to all products.</span>
+          </p>
           <div className="mt-4 flex flex-col gap-3">
             {items.map((item, idx) => {
               const isCheapShipping = Number(item.shipping_cost) === 1
