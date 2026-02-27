@@ -4,6 +4,7 @@ import { useState, useMemo } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { Plus, Pencil, Trash2, Truck, Search, X, Check, Clock, Package, PackageCheck } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 type Status = "Waiting" | "printing" | "shipping" | "delivered"
 type Shipper = "Oscar" | "Dario"
