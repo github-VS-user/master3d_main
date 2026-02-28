@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ChevronDown, ChevronUp, Trash2 } from "lucide-react"
+import { ChevronDown, ChevronUp, Trash2, StickyNote, Check, X } from "lucide-react"
 import { toast } from "sonner"
 
 interface Order {
@@ -14,6 +14,7 @@ interface Order {
   customer_address: string
   total: number
   is_paid: boolean
+  notes: string | null
   created_at: string
 }
 
@@ -35,6 +36,8 @@ export function AdminOrdersClient({
 }) {
   const [orders, setOrders] = useState<Order[]>(initialOrders)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
+  const [noteText, setNoteText] = useState("")
   const router = useRouter()
 
   const togglePaid = async (order: Order) => {
@@ -68,6 +71,34 @@ export function AdminOrdersClient({
     router.refresh()
   }
 
+  const startEditNote = (order: Order) => {
+    setEditingNoteId(order.id)
+    setNoteText(order.notes ?? "")
+  }
+
+  const cancelEditNote = () => {
+    setEditingNoteId(null)
+    setNoteText("")
+  }
+
+  const saveNote = async (orderId: string) => {
+    const supabase = createClient()
+    const { error } = await supabase
+      .from("orders")
+      .update({ notes: noteText.trim() || null })
+      .eq("id", orderId)
+
+    if (error) {
+      toast.error("Failed to save note")
+      return
+    }
+
+    setOrders(orders.map((o) => (o.id === orderId ? { ...o, notes: noteText.trim() || null } : o)))
+    setEditingNoteId(null)
+    setNoteText("")
+    toast.success("Note saved")
+  }
+
   return (
     <div>
       <h1 className="font-heading text-2xl font-bold text-foreground">Orders</h1>
@@ -81,6 +112,7 @@ export function AdminOrdersClient({
           orders.map((order) => {
             const items = allItems.filter((i) => i.order_id === order.id)
             const isExpanded = expandedId === order.id
+            const isEditingNote = editingNoteId === order.id
             return (
               <div key={order.id} className="overflow-hidden rounded-lg border border-border bg-card">
                 <div
@@ -93,31 +125,24 @@ export function AdminOrdersClient({
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-heading text-sm font-bold text-card-foreground">
-                        {"#"}
-                        {order.order_number}
+                        {"#"}{order.order_number}
                       </span>
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          order.is_paid
-                            ? "bg-green-100 text-green-700"
-                            : "bg-amber-100 text-amber-700"
-                        }`}
-                      >
+                      <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${order.is_paid ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
                         {order.is_paid ? "Paid" : "Pending"}
                       </span>
+                      {order.notes && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                          <StickyNote className="h-3 w-3" />
+                          Note
+                        </span>
+                      )}
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {order.customer_name}
-                      {" - CHF "}
-                      {Number(order.total).toFixed(2)}
+                      {order.customer_name}{" - CHF "}{Number(order.total).toFixed(2)}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    {isExpanded ? (
-                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                    )}
+                    {isExpanded ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
                   </div>
                 </div>
 
@@ -144,12 +169,57 @@ export function AdminOrdersClient({
                       </div>
                       <div>
                         <dt className="text-muted-foreground">Total</dt>
-                        <dd className="font-bold text-primary">
-                          {"CHF "}
-                          {Number(order.total).toFixed(2)}
-                        </dd>
+                        <dd className="font-bold text-primary">{"CHF "}{Number(order.total).toFixed(2)}</dd>
                       </div>
                     </dl>
+
+                    {/* Notes */}
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <p className="text-xs font-medium uppercase text-muted-foreground">Admin Note</p>
+                        {!isEditingNote && (
+                          <button
+                            onClick={() => startEditNote(order)}
+                            className="flex items-center gap-1 rounded px-2 py-1 text-xs text-primary hover:bg-primary/10 transition-colors"
+                          >
+                            <StickyNote className="h-3 w-3" />
+                            {order.notes ? "Edit" : "Add note"}
+                          </button>
+                        )}
+                      </div>
+                      {isEditingNote ? (
+                        <div className="flex flex-col gap-2">
+                          <textarea
+                            value={noteText}
+                            onChange={(e) => setNoteText(e.target.value)}
+                            rows={3}
+                            autoFocus
+                            placeholder="Add a note for this order..."
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => saveNote(order.id)}
+                              className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                            >
+                              <Check className="h-3.5 w-3.5" />
+                              Save
+                            </button>
+                            <button
+                              onClick={cancelEditNote}
+                              className="flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted/80 transition-colors"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : order.notes ? (
+                        <p className="rounded-md bg-blue-50 border border-blue-100 px-3 py-2 text-sm text-blue-900">{order.notes}</p>
+                      ) : (
+                        <p className="text-xs text-muted-foreground italic">No note added</p>
+                      )}
+                    </div>
 
                     {items.length > 0 && (
                       <div className="mt-4">
@@ -157,17 +227,8 @@ export function AdminOrdersClient({
                         <ul className="mt-2 flex flex-col gap-2">
                           {items.map((item) => (
                             <li key={item.id} className="flex items-center justify-between rounded-md bg-muted px-3 py-2 text-sm">
-                              <span className="text-foreground">
-                                {item.product_name}
-                                {" x"}
-                                {item.quantity}
-                              </span>
-                              <span className="text-muted-foreground">
-                                {"CHF "}
-                                {(Number(item.price) * item.quantity).toFixed(2)}
-                                {" | "}
-                                {item.shipping_time}
-                              </span>
+                              <span className="text-foreground">{item.product_name}{" x"}{item.quantity}</span>
+                              <span className="text-muted-foreground">{"CHF "}{(Number(item.price) * item.quantity).toFixed(2)}{" | "}{item.shipping_time}</span>
                             </li>
                           ))}
                         </ul>
@@ -177,11 +238,7 @@ export function AdminOrdersClient({
                     <div className="mt-4 flex gap-3">
                       <button
                         onClick={() => togglePaid(order)}
-                        className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                          order.is_paid
-                            ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
-                            : "bg-green-100 text-green-700 hover:bg-green-200"
-                        }`}
+                        className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${order.is_paid ? "bg-amber-100 text-amber-700 hover:bg-amber-200" : "bg-green-100 text-green-700 hover:bg-green-200"}`}
                       >
                         {order.is_paid ? "Mark Unpaid" : "Mark as Paid"}
                       </button>
@@ -207,3 +264,5 @@ export function AdminOrdersClient({
     </div>
   )
 }
+
+

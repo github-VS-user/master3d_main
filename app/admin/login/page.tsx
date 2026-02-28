@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
             alt="Master 3D"
             width={120}
             height={48}
-            className="h-12 rounded"
+            className="rounded"
             style={{ width: 'auto', height: '3rem' }}
           />
           <div className="w-full rounded-lg border border-border bg-card p-6 shadow-sm">
