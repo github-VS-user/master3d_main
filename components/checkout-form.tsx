@@ -47,7 +47,7 @@ export function CheckoutForm() {
     : 0
 
   const finalTotal = Math.max(0, total - discount)
-  const canUseCash = appliedPromo?.code === "FRIENDS123"
+  const canUseCash = appliedPromo?.code?.toUpperCase() === "FRIENDS123"
   const { hasFreeShipping, hasGroupedDiscount, groupedCount, groupedSaving } = shippingBreakdown
 
   if (count === 0) {
@@ -131,6 +131,7 @@ export function CheckoutForm() {
   const handleRemovePromo = () => {
     setAppliedPromo(null)
     setPromoCode("")
+    if (paymentMethod === "cash") setPaymentMethod(null)
     toast.info("Promo code removed")
   }
 
