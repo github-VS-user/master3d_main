@@ -67,7 +67,7 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
               alt="Master 3D"
               width={120}
               height={48}
-              className="w-28 rounded-lg"
+              className="rounded-lg"
               style={{ width: '7rem', height: 'auto' }}
               priority
             />
