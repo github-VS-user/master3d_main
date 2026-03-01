@@ -42,6 +42,9 @@ export function Navbar() {
           <Link href="/my-orders" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
             {t("nav.myOrders")}
           </Link>
+          <Link href="/contact" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
+            Contact
+          </Link>
           <button
             onClick={toggleLanguage}
             className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
@@ -104,6 +107,13 @@ export function Navbar() {
               className="text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
               {t("nav.myOrders")}
+            </Link>
+            <Link
+              href="/contact"
+              onClick={() => setMobileOpen(false)}
+              className="text-sm font-medium text-foreground transition-colors hover:text-primary"
+            >
+              Contact
             </Link>
             <button
               onClick={toggleLanguage}
