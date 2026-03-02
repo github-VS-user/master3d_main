@@ -135,17 +135,17 @@ export function CheckoutForm() {
     toast.info("Promo code removed")
   }
 
-  const isLargeOrder = count >= 10
+  const totalItemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  const isLargeOrder = totalItemCount >= 10
 
   const handleNext = () => {
-    if (!name || !email || !street || !city || !zip || !canton) {
-      toast.error("Please fill in all required fields")
-      return
-    }
-
-    // Phone required for large orders (10+ items)
-    if (isLargeOrder && !phone.trim()) {
-      toast.error("Phone number is required for orders of 10 or more items")
+    const phoneRequired = isLargeOrder && !phone.trim()
+    if (!name || !email || !street || !city || !zip || !canton || phoneRequired) {
+      if (phoneRequired) {
+        toast.error("Phone number is required for orders of 10 or more items")
+      } else {
+        toast.error("Please fill in all required fields")
+      }
       return
     }
 
