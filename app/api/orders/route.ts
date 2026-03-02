@@ -112,6 +112,8 @@ export async function POST(request: Request) {
           order_number: orderNumber,
           customer_name,
           customer_phone,
+          customer_address,
+          payment_method,
           total,
           items,
         }),
