@@ -135,9 +135,17 @@ export function CheckoutForm() {
     toast.info("Promo code removed")
   }
 
+  const isLargeOrder = count >= 10
+
   const handleNext = () => {
     if (!name || !email || !street || !city || !zip || !canton) {
       toast.error("Please fill in all required fields")
+      return
+    }
+
+    // Phone required for large orders (10+ items)
+    if (isLargeOrder && !phone.trim()) {
+      toast.error("Phone number is required for orders of 10 or more items")
       return
     }
 
@@ -468,16 +476,27 @@ export function CheckoutForm() {
                   </div>
                   <div>
                     <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-card-foreground">
-                      Phone Number <span className="text-xs text-muted-foreground">(optional)</span>
+                      Phone Number{" "}
+                      {isLargeOrder
+                        ? <span className="text-xs font-semibold text-destructive">required for 10+ items</span>
+                        : <span className="text-xs text-muted-foreground">(optional)</span>
+                      }
                     </label>
                     <input
                       id="phone"
                       type="tel"
+                      required={isLargeOrder}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+41 XX XXX XX XX"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      className={`w-full rounded-md border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring ${isLargeOrder && !phone.trim() ? "border-destructive" : "border-input"}`}
                     />
+                    {isLargeOrder && (
+                      <p className="mt-1.5 flex items-start gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-800">
+                        <span className="mt-0.5 shrink-0">&#9432;</span>
+                        Large orders (10+ items) may take longer to ship. We need your phone number to keep you updated.
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label htmlFor="street" className="mb-1.5 block text-sm font-medium text-card-foreground">Street Address</label>
