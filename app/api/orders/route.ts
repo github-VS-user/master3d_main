@@ -20,6 +20,9 @@ function determineShipper(address: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
+    // Derive base URL from the incoming request so notify works on any host
+    const requestUrl = new URL(request.url)
+    const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`
     const { customer_name, customer_email, customer_phone, customer_address, payment_method, promo_code, discount_amount, items, total } = body
 
     if (!customer_name || !customer_email || !customer_address || !payment_method || !items || items.length === 0) {
@@ -105,7 +108,7 @@ export async function POST(request: Request) {
 
     // Send notification email and SMS (fire-and-forget)
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ""}/api/notify`, {
+      await fetch(`${baseUrl}/api/notify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
