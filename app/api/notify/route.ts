@@ -2,12 +2,21 @@ import { NextResponse } from "next/server"
 
 async function sendTelegram(chatId: string, text: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN
-  if (!token || !chatId) return
-  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  if (!token || !chatId) {
+    console.error("[v0] Telegram: missing token or chatId", { hasToken: !!token, chatId })
+    return
+  }
+  const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
   })
+  if (!res.ok) {
+    const err = await res.text()
+    console.error(`[v0] Telegram error for chatId ${chatId}:`, err)
+  } else {
+    console.log(`[v0] Telegram message sent to ${chatId}`)
+  }
 }
 
 export async function POST(request: Request) {
@@ -15,7 +24,9 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { order_number, customer_name, customer_phone, customer_address, payment_method, total, items } = body
 
-    const itemLines = items
+    console.log("[v0] Notify called for order:", order_number)
+
+    const itemLines = (items ?? [])
       .map((i: { product_name: string; quantity: number; price: number }) =>
         `  • ${i.product_name} x${i.quantity} — CHF ${(Number(i.price) * i.quantity).toFixed(2)}`
       )
@@ -30,7 +41,7 @@ export async function POST(request: Request) {
       `<b>Payment:</b> ${payment_method}`,
       ``,
       `<b>Items:</b>`,
-      itemLines,
+      itemLines || "  (no items)",
       ``,
       `<b>Total: CHF ${Number(total).toFixed(2)}</b>`,
     ]
@@ -39,6 +50,8 @@ export async function POST(request: Request) {
 
     const chatId1 = process.env.TELEGRAM_CHAT_ID_1
     const chatId2 = process.env.TELEGRAM_CHAT_ID_2
+
+    console.log("[v0] Sending to chatIds:", { chatId1: !!chatId1, chatId2: !!chatId2 })
 
     await Promise.all([
       chatId1 ? sendTelegram(chatId1, message) : Promise.resolve(),
