@@ -13,6 +13,11 @@ const _spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-spac
 export const metadata: Metadata = {
   title: 'Master 3D | Swiss 3D Printing',
   description: 'Premium 3D printed products made in Switzerland. Browse our catalog and order custom prints with fast delivery across Switzerland.',
+  icons: {
+    icon: '/images/master3d_logo.jpg',
+    shortcut: '/images/master3d_logo.jpg',
+    apple: '/images/master3d_logo.jpg',
+  },
 }
 
 export const viewport: Viewport = {

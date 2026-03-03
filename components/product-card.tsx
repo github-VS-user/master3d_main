@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { Package, Truck, ChevronLeft, ChevronRight } from "lucide-react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { addToCart } from "@/lib/cart-store"
 import { toast } from "sonner"
 import { useLanguage } from "@/lib/language-context"
@@ -37,13 +37,22 @@ export function ProductCard({ product }: { product: Product }) {
   const [selectedColor, setSelectedColor] = useState<string>(availableColors[0] || "")
   const productImages = product.images && product.images.length > 0 ? product.images : (product.image_url ? [product.image_url] : [])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const touchStartX = useRef<number | null>(null)
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % productImages.length)
+  const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % productImages.length)
+  const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
   }
 
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length)
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return
+    const diff = touchStartX.current - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 40) {
+      diff > 0 ? nextImage() : prevImage()
+    }
+    touchStartX.current = null
   }
 
   const handleAdd = () => {
@@ -65,7 +74,11 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-shadow hover:shadow-lg">
-      <div className="relative aspect-square overflow-hidden bg-muted">
+      <div
+        className="relative aspect-square overflow-hidden bg-muted"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {productImages.length > 0 ? (
           <>
             <Image

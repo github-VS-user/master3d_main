@@ -1,7 +1,7 @@
 "use client"
 
 import { useCart } from "@/hooks/use-cart"
-import { Minus, Plus, Trash2, ShoppingCart, ArrowRight, Check } from "lucide-react"
+import { Minus, Plus, Trash2, ShoppingCart, ArrowRight, Check, Loader2, Package } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -36,15 +36,27 @@ export function CheckoutForm() {
   const [canton, setCanton] = useState("")
   const [promoCode, setPromoCode] = useState("")
   const [appliedPromo, setAppliedPromo] = useState<PromoCode | null>(null)
+  const [secondPromoCode, setSecondPromoCode] = useState("")
+  const [appliedSecondPromo, setAppliedSecondPromo] = useState<PromoCode | null>(null)
+  const [checkingSecondPromo, setCheckingSecondPromo] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<"iban" | "twint" | "cash" | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [checkingPromo, setCheckingPromo] = useState(false)
 
-  const discount = appliedPromo 
-    ? appliedPromo.discount_type === "percentage"
-      ? (total * appliedPromo.discount_value) / 100
-      : appliedPromo.discount_value
-    : 0
+  const discount = (() => {
+    let d = 0
+    if (appliedPromo) {
+      d += appliedPromo.discount_type === "percentage"
+        ? (total * appliedPromo.discount_value) / 100
+        : appliedPromo.discount_value
+    }
+    if (appliedSecondPromo) {
+      d += appliedSecondPromo.discount_type === "percentage"
+        ? (total * appliedSecondPromo.discount_value) / 100
+        : appliedSecondPromo.discount_value
+    }
+    return d
+  })()
 
   const finalTotal = Math.max(0, total - discount)
   const canUseCash = appliedPromo?.code?.toUpperCase() === "FRIENDS123"
@@ -131,8 +143,48 @@ export function CheckoutForm() {
   const handleRemovePromo = () => {
     setAppliedPromo(null)
     setPromoCode("")
+    setAppliedSecondPromo(null)
+    setSecondPromoCode("")
     if (paymentMethod === "cash") setPaymentMethod(null)
     toast.info("Promo code removed")
+  }
+
+  const handleApplySecondPromo = async () => {
+    if (!secondPromoCode.trim()) return
+    setCheckingSecondPromo(true)
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from("promo_codes")
+        .select("*")
+        .eq("code", secondPromoCode.toUpperCase())
+        .eq("is_active", true)
+        .single()
+
+      if (error || !data) {
+        toast.error("Invalid or inactive promo code")
+        return
+      }
+      if (data.code.toUpperCase() === "FRIENDS123") {
+        toast.error("Cannot apply FRIENDS123 as a second code")
+        return
+      }
+      if (appliedPromo && data.code === appliedPromo.code) {
+        toast.error("This code is already applied")
+        return
+      }
+      if (data.max_uses !== null && data.use_count >= data.max_uses) {
+        toast.error("This promo code has reached its usage limit")
+        return
+      }
+      setAppliedSecondPromo(data as PromoCode)
+      setSecondPromoCode("")
+      toast.success(`Second promo "${data.code}" applied!`)
+    } catch {
+      toast.error("Failed to apply promo code")
+    } finally {
+      setCheckingSecondPromo(false)
+    }
   }
 
   const totalItemCount = items.reduce((sum, item) => sum + item.quantity, 0)
@@ -352,22 +404,70 @@ export function CheckoutForm() {
           <div className="mt-4 rounded-lg border border-border bg-card p-4">
             <label className="block text-sm font-medium text-card-foreground mb-2">Promo Code</label>
             {appliedPromo ? (
-              <div className="flex items-center justify-between rounded-lg bg-primary/10 px-4 py-3">
-                <div>
-                  <p className="font-mono font-semibold text-primary">{appliedPromo.code}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {appliedPromo.discount_type === "percentage"
-                      ? `${appliedPromo.discount_value}% discount`
-                      : `CHF ${appliedPromo.discount_value.toFixed(2)} discount`}
-                  </p>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between rounded-lg bg-primary/10 px-4 py-3">
+                  <div>
+                    <p className="font-mono font-semibold text-primary">{appliedPromo.code}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {appliedPromo.discount_type === "percentage"
+                        ? `${appliedPromo.discount_value}% discount`
+                        : `CHF ${appliedPromo.discount_value.toFixed(2)} discount`}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleRemovePromo}
+                    className="text-sm font-medium text-destructive hover:text-destructive/80"
+                    disabled={step === "payment"}
+                  >
+                    Remove
+                  </button>
                 </div>
-                <button
-                  onClick={handleRemovePromo}
-                  className="text-sm font-medium text-destructive hover:text-destructive/80"
-                  disabled={step === "payment"}
-                >
-                  Remove
-                </button>
+
+                {/* Second promo — only for FRIENDS123 */}
+                {canUseCash && (
+                  appliedSecondPromo ? (
+                    <div className="flex items-center justify-between rounded-lg bg-green-50 border border-green-200 px-4 py-3">
+                      <div>
+                        <p className="font-mono font-semibold text-green-700">{appliedSecondPromo.code}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {appliedSecondPromo.discount_type === "percentage"
+                            ? `${appliedSecondPromo.discount_value}% discount`
+                            : `CHF ${appliedSecondPromo.discount_value.toFixed(2)} discount`}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => { setAppliedSecondPromo(null); setSecondPromoCode("") }}
+                        className="text-sm font-medium text-destructive hover:text-destructive/80"
+                        disabled={step === "payment"}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-1.5">
+                      <p className="text-xs text-green-700 font-medium">FRIENDS123 perk: add a second promo code</p>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={secondPromoCode}
+                          onChange={(e) => setSecondPromoCode(e.target.value.toUpperCase())}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleApplySecondPromo() } }}
+                          placeholder="Second promo code"
+                          className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                          disabled={step === "payment"}
+                          autoComplete="off"
+                        />
+                        <button
+                          onClick={handleApplySecondPromo}
+                          disabled={checkingSecondPromo || !secondPromoCode.trim() || step === "payment"}
+                          className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {checkingSecondPromo ? "Checking..." : "Apply"}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                )}
               </div>
             ) : (
               <div className="flex gap-2">
@@ -629,9 +729,19 @@ export function CheckoutForm() {
                   <button
                     onClick={handleSubmit}
                     disabled={submitting || !paymentMethod}
-                    className="flex-1 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="relative flex-1 overflow-hidden rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
                   >
-                    {submitting ? "Processing..." : "Place Order"}
+                    {submitting ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Placing order...</span>
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-center gap-2">
+                        <Package className="h-4 w-4" />
+                        <span>Place Order</span>
+                      </span>
+                    )}
                   </button>
                 </div>
               </>
