@@ -37,10 +37,11 @@ export function ProductCard({ product }: { product: Product }) {
   const [selectedColor, setSelectedColor] = useState<string>(availableColors[0] || "")
   const productImages = product.images && product.images.length > 0 ? product.images : (product.image_url ? [product.image_url] : [])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [imageLoaded, setImageLoaded] = useState(false)
   const touchStartX = useRef<number | null>(null)
 
-  const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % productImages.length)
-  const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length)
+  const nextImage = () => { setImageLoaded(false); setCurrentImageIndex((prev) => (prev + 1) % productImages.length) }
+  const prevImage = () => { setImageLoaded(false); setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length) }
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX
@@ -51,8 +52,7 @@ export function ProductCard({ product }: { product: Product }) {
     const diff = touchStartX.current - e.changedTouches[0].clientX
     if (Math.abs(diff) > 40) {
       diff > 0 ? nextImage() : prevImage()
-    }
-    touchStartX.current = null
+    }    touchStartX.current = null
   }
 
   const handleAdd = () => {
@@ -81,11 +81,16 @@ export function ProductCard({ product }: { product: Product }) {
       >
         {productImages.length > 0 ? (
           <>
+            {/* Skeleton shown while loading */}
+            {!imageLoaded && (
+              <div className="absolute inset-0 z-10 animate-pulse bg-muted" />
+            )}
             {/\.gif($|\?)/i.test(productImages[currentImageIndex]) ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={productImages[currentImageIndex]}
                 alt={product.name}
+                onLoad={() => setImageLoaded(true)}
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
@@ -93,10 +98,27 @@ export function ProductCard({ product }: { product: Product }) {
                 src={productImages[currentImageIndex]}
                 alt={product.name}
                 fill
+                priority={currentImageIndex === 0}
+                onLoad={() => setImageLoaded(true)}
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             )}
+            {/* Preload next and previous images */}
+            {productImages.length > 1 && productImages.map((src, i) => {
+              if (i === currentImageIndex || /\.gif($|\?)/i.test(src)) return null
+              return (
+                <Image
+                  key={src}
+                  src={src}
+                  alt=""
+                  fill
+                  className="invisible absolute"
+                  sizes="1px"
+                  aria-hidden
+                />
+              )
+            })}
             {productImages.length > 1 && (
               <>
                 <button

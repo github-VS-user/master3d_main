@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { useLanguage } from "@/lib/language-context"
 
 export function Footer() {
@@ -13,14 +12,7 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
           {/* Brand */}
           <div className="flex flex-col gap-3">
-            <Image
-              src="/images/master3d_logo.jpg"
-              alt="Master 3D"
-              width={160}
-              height={64}
-              className="rounded"
-              style={{ width: 'auto', height: '4rem' }}
-            />
+            <span className="font-heading text-xl font-bold text-card">Master 3D</span>
             <span className="text-sm text-card/60">{t("footer.tagline")}</span>
           </div>
 
