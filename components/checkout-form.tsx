@@ -328,11 +328,11 @@ export function CheckoutForm() {
         {/* Cart items */}
         <div className="lg:col-span-3">
           <h2 className="font-heading text-lg font-semibold text-foreground">
-            Cart ({count} {count === 1 ? "item" : "items"})
+            {t("checkout.cart")} ({count} {count === 1 ? t("checkout.item") : t("checkout.items")})
           </h2>
           <p className="mt-1 flex items-start gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
             <span className="mt-0.5 shrink-0">&#9432;</span>
-            <span>Product images may show a different colour. The colour you will receive is the one you selected, not the one shown in the image. This applies to all products.</span>
+            <span>{t("checkout.colourNote")}</span>
           </p>
           <div className="mt-4 flex flex-col gap-3">
             {items.map((item, idx) => {
@@ -402,7 +402,7 @@ export function CheckoutForm() {
 
           {/* Promo Code */}
           <div className="mt-4 rounded-lg border border-border bg-card p-4">
-            <label className="block text-sm font-medium text-card-foreground mb-2">Promo Code</label>
+            <label className="block text-sm font-medium text-card-foreground mb-2">{t("checkout.promoCode")}</label>
             {appliedPromo ? (
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between rounded-lg bg-primary/10 px-4 py-3">
@@ -414,12 +414,8 @@ export function CheckoutForm() {
                         : `CHF ${appliedPromo.discount_value.toFixed(2)} discount`}
                     </p>
                   </div>
-                  <button
-                    onClick={handleRemovePromo}
-                    className="text-sm font-medium text-destructive hover:text-destructive/80"
-                    disabled={step === "payment"}
-                  >
-                    Remove
+                  <button onClick={handleRemovePromo} className="text-sm font-medium text-destructive hover:text-destructive/80" disabled={step === "payment"}>
+                    {t("checkout.remove")}
                   </button>
                 </div>
 
@@ -435,34 +431,26 @@ export function CheckoutForm() {
                             : `CHF ${appliedSecondPromo.discount_value.toFixed(2)} discount`}
                         </p>
                       </div>
-                      <button
-                        onClick={() => { setAppliedSecondPromo(null); setSecondPromoCode("") }}
-                        className="text-sm font-medium text-destructive hover:text-destructive/80"
-                        disabled={step === "payment"}
-                      >
-                        Remove
+                      <button onClick={() => { setAppliedSecondPromo(null); setSecondPromoCode("") }} className="text-sm font-medium text-destructive hover:text-destructive/80" disabled={step === "payment"}>
+                        {t("checkout.remove")}
                       </button>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-1.5">
-                      <p className="text-xs text-green-700 font-medium">FRIENDS123 perk: add a second promo code</p>
+                      <p className="text-xs text-green-700 font-medium">{t("checkout.friendsPerk")}</p>
                       <div className="flex gap-2">
                         <input
                           type="text"
                           value={secondPromoCode}
                           onChange={(e) => setSecondPromoCode(e.target.value.toUpperCase())}
                           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleApplySecondPromo() } }}
-                          placeholder="Second promo code"
+                          placeholder={t("checkout.secondPromoCode")}
                           className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
                           disabled={step === "payment"}
                           autoComplete="off"
                         />
-                        <button
-                          onClick={handleApplySecondPromo}
-                          disabled={checkingSecondPromo || !secondPromoCode.trim() || step === "payment"}
-                          className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {checkingSecondPromo ? "Checking..." : "Apply"}
+                        <button onClick={handleApplySecondPromo} disabled={checkingSecondPromo || !secondPromoCode.trim() || step === "payment"} className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                          {checkingSecondPromo ? t("checkout.checking") : t("checkout.apply")}
                         </button>
                       </div>
                     </div>
@@ -475,23 +463,14 @@ export function CheckoutForm() {
                   type="text"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      handleApplyPromo()
-                    }
-                  }}
-                  placeholder="Enter promo code"
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleApplyPromo() } }}
+                  placeholder={t("checkout.enterPromoCode")}
                   className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={step === "payment"}
                   autoComplete="off"
                 />
-                <button
-                  onClick={handleApplyPromo}
-                  disabled={checkingPromo || !promoCode.trim() || step === "payment"}
-                  className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {checkingPromo ? "Checking..." : "Apply"}
+                <button onClick={handleApplyPromo} disabled={checkingPromo || !promoCode.trim() || step === "payment"} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed">
+                  {checkingPromo ? t("checkout.checking") : t("checkout.apply")}
                 </button>
               </div>
             )}
@@ -500,11 +479,11 @@ export function CheckoutForm() {
           {/* Total */}
           <div className="mt-4 rounded-lg bg-muted px-4 py-3 space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Products</span>
+              <span className="text-muted-foreground">{t("checkout.products")}</span>
               <span className="font-medium text-foreground">CHF {subtotal.toFixed(2)}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Shipping</span>
+              <span className="text-muted-foreground">{t("checkout.shipping")}</span>
               {hasFreeShipping ? (
                 <span className="font-semibold text-green-600">FREE</span>
               ) : (
@@ -515,7 +494,7 @@ export function CheckoutForm() {
             {/* Free shipping banner */}
             {hasFreeShipping && (
               <div className="rounded-md bg-green-50 border border-green-200 px-3 py-2">
-                <p className="text-xs font-semibold text-green-700">Free shipping — orders over CHF 20 ship free.</p>
+                <p className="text-xs font-semibold text-green-700">{t("checkout.freeShippingNote")}</p>
               </div>
             )}
 
@@ -531,12 +510,12 @@ export function CheckoutForm() {
 
             {discount > 0 && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Promo discount</span>
+                <span className="text-muted-foreground">{t("checkout.promoDiscount")}</span>
                 <span className="font-medium text-primary">-CHF {discount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex items-center justify-between border-t border-border pt-2">
-              <span className="font-heading text-base font-bold text-foreground sm:text-lg">Total</span>
+              <span className="font-heading text-base font-bold text-foreground sm:text-lg">{t("common.total")}</span>
               <span className="font-heading text-lg font-bold text-primary sm:text-xl">CHF {finalTotal.toFixed(2)}</span>
             </div>
           </div>
@@ -547,11 +526,11 @@ export function CheckoutForm() {
           <div className="rounded-lg border border-border bg-card p-4">
             {step === "details" ? (
               <>
-                <h2 className="font-heading text-base font-semibold text-card-foreground">Shipping Details</h2>
-                <p className="mt-1 text-xs text-muted-foreground">Switzerland delivery only</p>
+                <h2 className="font-heading text-base font-semibold text-card-foreground">{t("checkout.shippingDetails")}</h2>
+                <p className="mt-1 text-xs text-muted-foreground">{t("checkout.shippingOnly")}</p>
                 <div className="mt-4 flex flex-col gap-3">
                   <div>
-                    <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-card-foreground">Full Name</label>
+                    <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-card-foreground">{t("checkout.fullName")}</label>
                     <input
                       id="name"
                       type="text"
@@ -563,7 +542,7 @@ export function CheckoutForm() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-card-foreground">Email Address</label>
+                    <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-card-foreground">{t("checkout.emailAddress")}</label>
                     <input
                       id="email"
                       type="email"
@@ -576,10 +555,10 @@ export function CheckoutForm() {
                   </div>
                   <div>
                     <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-card-foreground">
-                      Phone Number{" "}
+                      {t("checkout.phoneNumber")}{" "}
                       {isLargeOrder
-                        ? <span className="text-xs font-semibold text-destructive">required for 10+ items</span>
-                        : <span className="text-xs text-muted-foreground">(optional)</span>
+                        ? <span className="text-xs font-semibold text-destructive">{t("checkout.phoneRequired")}</span>
+                        : <span className="text-xs text-muted-foreground">{t("checkout.phoneOptional")}</span>
                       }
                     </label>
                     <input
@@ -594,12 +573,12 @@ export function CheckoutForm() {
                     {isLargeOrder && (
                       <p className="mt-1.5 flex items-start gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-800">
                         <span className="mt-0.5 shrink-0">&#9432;</span>
-                        Large orders (10+ items) may take longer to ship. We need your phone number to keep you updated.
+                        {t("checkout.largeOrderNote")}
                       </p>
                     )}
                   </div>
                   <div>
-                    <label htmlFor="street" className="mb-1.5 block text-sm font-medium text-card-foreground">Street Address</label>
+                    <label htmlFor="street" className="mb-1.5 block text-sm font-medium text-card-foreground">{t("checkout.streetAddress")}</label>
                     <input
                       id="street"
                       type="text"
@@ -612,7 +591,7 @@ export function CheckoutForm() {
                   </div>
                   <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4">
                     <div>
-                      <label htmlFor="zip" className="mb-1.5 block text-sm font-medium text-card-foreground">ZIP Code</label>
+                      <label htmlFor="zip" className="mb-1.5 block text-sm font-medium text-card-foreground">{t("checkout.zipCode")}</label>
                       <input
                         id="zip"
                         type="text"
@@ -626,7 +605,7 @@ export function CheckoutForm() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="city" className="mb-1.5 block text-sm font-medium text-card-foreground">City</label>
+                      <label htmlFor="city" className="mb-1.5 block text-sm font-medium text-card-foreground">{t("checkout.city")}</label>
                       <input
                         id="city"
                         type="text"
@@ -639,7 +618,7 @@ export function CheckoutForm() {
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="canton" className="mb-1.5 block text-sm font-medium text-card-foreground">Canton</label>
+                    <label htmlFor="canton" className="mb-1.5 block text-sm font-medium text-card-foreground">{t("checkout.canton")}</label>
                     <select
                       id="canton"
                       required
@@ -647,7 +626,7 @@ export function CheckoutForm() {
                       onChange={(e) => setCanton(e.target.value)}
                       className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     >
-                      <option value="">Select canton</option>
+                      <option value="">{t("checkout.selectCanton")}</option>
                       {SWISS_CANTONS.map((c) => (
                         <option key={c} value={c}>{c}</option>
                       ))}
@@ -658,15 +637,15 @@ export function CheckoutForm() {
                     onClick={handleNext}
                     className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                   >
-                    Next
+                    {t("checkout.next")}
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <h2 className="font-heading text-base font-semibold text-card-foreground sm:text-lg">Payment Method</h2>
-                <p className="mt-1 text-xs text-muted-foreground">Choose how you want to pay</p>
+                <h2 className="font-heading text-base font-semibold text-card-foreground sm:text-lg">{t("checkout.paymentMethod")}</h2>
+                <p className="mt-1 text-xs text-muted-foreground">{t("checkout.choosePayment")}</p>
                 <div className="mt-4 space-y-3">
                   <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-colors ${paymentMethod === "iban" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
                     <input
@@ -678,8 +657,8 @@ export function CheckoutForm() {
                       className="h-4 w-4 text-primary focus:ring-2 focus:ring-primary"
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-card-foreground">Bank Transfer (IBAN)</p>
-                      <p className="text-xs text-muted-foreground">Pay via bank transfer</p>
+                      <p className="font-medium text-card-foreground">{t("checkout.bankTransfer")}</p>
+                      <p className="text-xs text-muted-foreground">{t("checkout.bankTransferDesc")}</p>
                     </div>
                   </label>
 
@@ -693,8 +672,8 @@ export function CheckoutForm() {
                       className="h-4 w-4 text-primary focus:ring-2 focus:ring-primary"
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-card-foreground">TWINT</p>
-                      <p className="text-xs text-muted-foreground">Pay with TWINT mobile app</p>
+                      <p className="font-medium text-card-foreground">{t("checkout.twint")}</p>
+                      <p className="text-xs text-muted-foreground">{t("checkout.twintDesc")}</p>
                     </div>
                   </label>
 
@@ -709,8 +688,8 @@ export function CheckoutForm() {
                         className="h-4 w-4 text-primary focus:ring-2 focus:ring-primary"
                       />
                       <div className="flex-1">
-                        <p className="font-medium text-card-foreground">Cash Payment</p>
-                        <p className="text-xs text-muted-foreground">Pay in cash on delivery</p>
+                        <p className="font-medium text-card-foreground">{t("checkout.cash")}</p>
+                        <p className="text-xs text-muted-foreground">{t("checkout.cashDesc")}</p>
                         <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                           Available with FRIENDS123
                         </span>
@@ -720,11 +699,8 @@ export function CheckoutForm() {
                 </div>
 
                 <div className="mt-4 flex gap-2">
-                  <button
-                    onClick={() => setStep("details")}
-                    className="flex-1 rounded-lg border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
-                  >
-                    Back
+                  <button onClick={() => setStep("details")} className="flex-1 rounded-lg border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted">
+                    {t("checkout.back")}
                   </button>
                   <button
                     onClick={handleSubmit}
@@ -734,12 +710,12 @@ export function CheckoutForm() {
                     {submitting ? (
                       <span className="flex items-center justify-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        <span>Placing order...</span>
+                        <span>{t("checkout.placeOrder")}...</span>
                       </span>
                     ) : (
                       <span className="flex items-center justify-center gap-2">
                         <Package className="h-4 w-4" />
-                        <span>Place Order</span>
+                        <span>{t("checkout.placeOrder")}</span>
                       </span>
                     )}
                   </button>
