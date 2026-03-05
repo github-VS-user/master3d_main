@@ -192,7 +192,7 @@ export function CheckoutForm() {
 
   const handleNext = () => {
     const phoneRequired = isLargeOrder && !phone.trim()
-    if (!name || !email || !street || !city || !zip || !canton || phoneRequired) {
+    if (!name || !street || !city || !zip || !canton || phoneRequired) {
       if (phoneRequired) {
         toast.error("Phone number is required for orders of 10 or more items")
       } else {
@@ -201,8 +201,8 @@ export function CheckoutForm() {
       return
     }
 
-    // Validate email
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    // Validate email only if provided
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       toast.error("Please enter a valid email address")
       return
     }
@@ -286,20 +286,25 @@ export function CheckoutForm() {
       
       clearCart()
       
-      // Send confirmation email
-      try {
-        await fetch('/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'order-confirmation',
-            orderNumber: data.order_number,
-            total: finalTotal,
-            email: email,
-          }),
-        })
-      } catch (error) {
-        console.error('[v0] Failed to send confirmation email:', error)
+      // Send confirmation email to customer if email provided
+      if (email) {
+        try {
+          await fetch('/api/confirm-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: email,
+              customer_name: name,
+              order_number: data.order_number,
+              order_id: data.order_id,
+              total: finalTotal,
+              payment_method: paymentMethod,
+              items,
+            }),
+          })
+        } catch (err) {
+          console.error('[v0] Failed to send confirmation email:', err)
+        }
       }
       
       router.push(`/order-success?id=${data.order_number}&payment=${paymentMethod}`)
@@ -542,16 +547,21 @@ export function CheckoutForm() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-card-foreground">{t("checkout.emailAddress")}</label>
+                    <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-card-foreground">
+                      {t("checkout.emailAddress")}{" "}
+                      <span className="text-xs text-muted-foreground">{t("checkout.phoneOptional")}</span>
+                    </label>
                     <input
                       id="email"
                       type="email"
-                      required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="max@example.com"
                       className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     />
+                    <p className="mt-1.5 text-xs text-muted-foreground">
+                      {t("checkout.emailHelper")}
+                    </p>
                   </div>
                   <div>
                     <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-card-foreground">

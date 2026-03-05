@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`
     const { customer_name, customer_email, customer_phone, customer_address, payment_method, promo_code, discount_amount, items, total } = body
 
-    if (!customer_name || !customer_email || !customer_address || !payment_method || !items || items.length === 0) {
+    if (!customer_name || !customer_address || !payment_method || !items || items.length === 0) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
