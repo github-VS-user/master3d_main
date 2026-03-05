@@ -94,7 +94,7 @@ export async function POST(request: Request) {
       </div>
 
       <p style="margin:0;font-size:13px;color:#6b7280;text-align:center;">
-        Questions? Email us at <a href="mailto:contact.master3d@gmail.com" style="color:#111827;">contact.master3d@gmail.com</a>
+        Questions? Email us at <a href="mailto:contact@master3d.net" style="color:#111827;">contact@master3d.net</a>
       </p>
     </div>
 
@@ -113,7 +113,7 @@ export async function POST(request: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Master 3D <onboarding@resend.dev>",
+        from: "Master 3D <contact@master3d.net>",
         to: [to],
         subject: `Order #${order_number} Confirmed — Master 3D`,
         html,
