@@ -247,13 +247,21 @@ export default async function OrderSuccessPage({
               </div>
             )}
 
-            <div className="mt-8 text-center">
+            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link
                 href="/"
                 className="inline-flex rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Back to Home
               </Link>
+              {order && (
+                <Link
+                  href={`/invoice/${order.id}`}
+                  className="inline-flex rounded-lg border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+                >
+                  View Invoice
+                </Link>
+              )}
             </div>
           </div>
         </main>

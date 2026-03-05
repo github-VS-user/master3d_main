@@ -38,10 +38,10 @@ export default function ContactPage() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Email</p>
                 <a
-                  href="mailto:contact.master3d@gmail.com"
+                  href="mailto:contact@master3d.net"
                   className="mt-1.5 block text-base font-semibold text-foreground hover:text-primary transition-colors break-all"
                 >
-                  contact.master3d@gmail.com
+                  contact@master3d.net
                 </a>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   Send us a message any time. We reply during our available hours.
@@ -104,7 +104,7 @@ export default function ContactPage() {
           <div className="mt-8 rounded-xl border border-border bg-card px-6 py-5">
             <p className="text-sm leading-relaxed text-muted-foreground text-center">
               Outside of opening hours? Send us an{" "}
-              <a href="mailto:contact.master3d@gmail.com" className="font-medium text-primary hover:underline">
+              <a href="mailto:contact@master3d.net" className="font-medium text-primary hover:underline">
                 email
               </a>{" "}
               and we will reply as soon as we are back. We typically respond within a few hours.
