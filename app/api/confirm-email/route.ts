@@ -113,7 +113,7 @@ export async function POST(request: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Master 3D <contact@master3d.net>",
+        from: "Master 3D <orders@master3d.net>",
         to: [to],
         subject: `Order #${order_number} Confirmed — Master 3D`,
         html,

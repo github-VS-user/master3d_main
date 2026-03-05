@@ -93,7 +93,7 @@ export default function TermsPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">Contact Information</h2>
               <p className="leading-relaxed text-muted-foreground">
-                For questions about these terms, please contact us at contact.master3d@gmail.com.
+                For questions about these terms, please contact us at privacy@master3d.net.
               </p>
             </section>
 

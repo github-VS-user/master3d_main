@@ -56,7 +56,7 @@ export default async function InvoicePage({
             <div>
               <h1 className="font-heading text-2xl font-bold text-card-foreground">Master 3D</h1>
               <p className="mt-0.5 text-sm text-muted-foreground">Switzerland</p>
-              <p className="mt-0.5 text-sm text-muted-foreground">contact.master3d@gmail.com</p>
+              <p className="mt-0.5 text-sm text-muted-foreground">contact@master3d.net</p>
             </div>
             <div className="text-right">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Invoice</p>
@@ -175,8 +175,8 @@ export default async function InvoicePage({
           <div className="rounded-b-xl border-t border-border bg-muted/50 px-8 py-5 text-center">
             <p className="text-xs text-muted-foreground">
               Thank you for your order. Questions? Contact us at{" "}
-              <a href="mailto:contact.master3d@gmail.com" className="text-primary">
-                contact.master3d@gmail.com
+              <a href="mailto:contact@master3d.net" className="text-primary">
+                contact@master3d.net
               </a>
             </p>
           </div>

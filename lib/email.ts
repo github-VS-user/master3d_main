@@ -24,11 +24,11 @@ export async function sendEmail(options: EmailOptions) {
     const recipients = [options.to, 'oscarege@icloud.com', 'dariodibonaoff@gmail.com'];
     
     const result = await resend.emails.send({
-      from: 'Master 3D <contact.master3d@gmail.com>',
+      from: 'Master 3D <orders@master3d.net>',
       to: recipients,
       subject: options.subject,
       html: options.html,
-      replyTo: options.replyTo || 'contact.master3d@gmail.com',
+      replyTo: options.replyTo || 'orders@master3d.net',
     });
 
     if (result.error) {

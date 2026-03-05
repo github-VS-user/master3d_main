@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
+import { useLanguage } from "@/lib/language-context"
 
 const SWISS_CANTONS = [
   "Aargau", "Appenzell Ausserrhoden", "Appenzell Innerrhoden", "Basel-Landschaft",
@@ -24,6 +25,7 @@ interface PromoCode {
 }
 
 export function CheckoutForm() {
+  const { t } = useLanguage()
   const { items, count, total, subtotal, shipping, shippingBreakdown, updateQuantity, removeFromCart, clearCart } = useCart()
   const router = useRouter()
   const [step, setStep] = useState<"details" | "payment">("details")

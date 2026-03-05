@@ -97,7 +97,7 @@ export default function ShippingPolicyPage() {
               <h2 className="mb-4 text-2xl font-semibold">Lost or Delayed Packages</h2>
               <p className="leading-relaxed text-muted-foreground">
                 If your package is significantly delayed or appears to be lost, contact us immediately at +41 78 251 47 68 or
-                contact.master3d@gmail.com. We will work with Swiss Post to locate your package or arrange a replacement if necessary.
+                contact@master3d.net. We will work with Swiss Post to locate your package or arrange a replacement if necessary.
               </p>
             </section>
 
@@ -105,7 +105,7 @@ export default function ShippingPolicyPage() {
               <h2 className="mb-4 text-2xl font-semibold">Damaged in Transit</h2>
               <p className="leading-relaxed text-muted-foreground">
                 If your package arrives damaged, please take photos of both the package and the product before opening completely. Contact us within 48 hours at +41 78 251 47 68 or
-                contact.master3d@gmail.com to report the damage. We will arrange a replacement or refund.
+                contact@master3d.net to report the damage. We will arrange a replacement or refund.
               </p>
             </section>
 
