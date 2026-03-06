@@ -107,7 +107,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="mb-4 text-2xl font-semibold">10. Contact Us</h2>
               <p className="leading-relaxed text-muted-foreground">
-                For questions about this privacy policy or to exercise your data rights, contact us at contact.master3d@gmail.com.
+                For questions about this privacy policy or to exercise your data rights, contact us at privacy@master3d.net.
               </p>
             </section>
 

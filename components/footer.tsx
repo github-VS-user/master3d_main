@@ -45,8 +45,8 @@ export function Footer() {
               <li>Master 3D</li>
               <li>Geneva, Switzerland</li>
               <li>
-                <a href="tel:+41782514768" className="transition-colors hover:text-card">
-                  contact.master3d@gmail.com
+                <a href="mailto:contact@master3d.net" className="transition-colors hover:text-card">
+                  contact@master3d.net
                 </a>
               </li>
             </ul>

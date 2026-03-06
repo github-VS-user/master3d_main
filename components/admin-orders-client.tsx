@@ -3,17 +3,19 @@
 import { createClient } from "@/lib/supabase/client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ChevronDown, ChevronUp, Trash2, StickyNote, Check, X } from "lucide-react"
+import { ChevronDown, ChevronUp, Trash2, StickyNote, Check, X, Truck } from "lucide-react"
 import { toast } from "sonner"
 
 interface Order {
   id: string
   order_number: string
   customer_name: string
+  customer_email: string | null
   customer_phone: string
   customer_address: string
   total: number
   is_paid: boolean
+  is_shipped: boolean
   notes: string | null
   created_at: string
 }
@@ -58,9 +60,13 @@ export function AdminOrdersClient({
     router.refresh()
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, orderNumber: string) => {
     if (!confirm("Are you sure you want to delete this order?")) return
     const supabase = createClient()
+
+    // Delete from tracking_orders too (matched by order_code = order_number)
+    await supabase.from("tracking_orders").delete().eq("order_code", orderNumber)
+
     const { error } = await supabase.from("orders").delete().eq("id", id)
     if (error) {
       toast.error("Failed to delete order")
@@ -69,6 +75,54 @@ export function AdminOrdersClient({
     setOrders(orders.filter((o) => o.id !== id))
     toast.success("Order deleted")
     router.refresh()
+  }
+
+  const [shippingOrderId, setShippingOrderId] = useState<string | null>(null)
+
+  const handleShipped = async (order: Order) => {
+    if (order.is_shipped) return
+    setShippingOrderId(order.id)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from("orders")
+        .update({ is_shipped: true })
+        .eq("id", order.id)
+
+      if (error) {
+        toast.error("Failed to mark as shipped")
+        return
+      }
+
+      setOrders(orders.map((o) => o.id === order.id ? { ...o, is_shipped: true } : o))
+
+      // Send shipped email if customer has an email
+      if (order.customer_email) {
+        try {
+          await fetch("/api/shipped-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              to: order.customer_email,
+              customer_name: order.customer_name,
+              order_number: order.order_number,
+              order_id: order.id,
+              estimated_days_min: 2,
+              estimated_days_max: 5,
+            }),
+          })
+          toast.success("Marked as shipped — confirmation email sent")
+        } catch {
+          toast.success("Marked as shipped (email notification failed)")
+        }
+      } else {
+        toast.success("Marked as shipped (no customer email on file)")
+      }
+
+      router.refresh()
+    } finally {
+      setShippingOrderId(null)
+    }
   }
 
   const startEditNote = (order: Order) => {
@@ -130,6 +184,12 @@ export function AdminOrdersClient({
                       <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${order.is_paid ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
                         {order.is_paid ? "Paid" : "Pending"}
                       </span>
+                      {order.is_shipped && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                          <Truck className="h-3 w-3" />
+                          Shipped
+                        </span>
+                      )}
                       {order.notes && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
                           <StickyNote className="h-3 w-3" />
@@ -155,8 +215,14 @@ export function AdminOrdersClient({
                       </div>
                       <div>
                         <dt className="text-muted-foreground">Phone</dt>
-                        <dd className="font-medium text-card-foreground">{order.customer_phone}</dd>
+                        <dd className="font-medium text-card-foreground">{order.customer_phone || "—"}</dd>
                       </div>
+                      {order.customer_email && (
+                        <div>
+                          <dt className="text-muted-foreground">Email</dt>
+                          <dd className="font-medium text-card-foreground">{order.customer_email}</dd>
+                        </div>
+                      )}
                       <div className="sm:col-span-2">
                         <dt className="text-muted-foreground">Address</dt>
                         <dd className="font-medium text-card-foreground">{order.customer_address}</dd>
@@ -235,7 +301,7 @@ export function AdminOrdersClient({
                       </div>
                     )}
 
-                    <div className="mt-4 flex gap-3">
+                    <div className="mt-4 flex flex-wrap gap-3">
                       <button
                         onClick={() => togglePaid(order)}
                         className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${order.is_paid ? "bg-amber-100 text-amber-700 hover:bg-amber-200" : "bg-green-100 text-green-700 hover:bg-green-200"}`}
@@ -243,7 +309,15 @@ export function AdminOrdersClient({
                         {order.is_paid ? "Mark Unpaid" : "Mark as Paid"}
                       </button>
                       <button
-                        onClick={() => handleDelete(order.id)}
+                        onClick={() => handleShipped(order)}
+                        disabled={order.is_shipped || shippingOrderId === order.id}
+                        className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${order.is_shipped ? "bg-blue-100 text-blue-700" : "bg-blue-600 text-white hover:bg-blue-700"}`}
+                      >
+                        <Truck className="h-3.5 w-3.5" />
+                        {shippingOrderId === order.id ? "Sending..." : order.is_shipped ? "Shipped" : "Order Shipped"}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(order.id, order.order_number)}
                         className="flex items-center gap-1.5 rounded-md bg-destructive/10 px-4 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/20"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
