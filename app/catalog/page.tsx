@@ -2,6 +2,16 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CatalogClient } from "@/components/catalog-client"
 import { createClient } from "@/lib/supabase/server"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Catalog - Browse 3D Printed Products",
+  description: "Browse our full catalog of 3D printed products. Gadgets, home decor, custom prints and more. Made in Switzerland with fast delivery.",
+  openGraph: {
+    title: "Catalog | Master 3D",
+    description: "Browse our full catalog of premium 3D printed products made in Switzerland.",
+  },
+}
 
 export const dynamic = "force-dynamic"
 
