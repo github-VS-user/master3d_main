@@ -47,15 +47,20 @@ const emptyForm: FormState = {
 const PRESET_COLORS = [
   { name: "Orange", hex: "#FF6B00" },
   { name: "White", hex: "#FFFFFF" },
-  { name: "Black", hex: "#000000" },
-  { name: "Red", hex: "#EF4444" },
   { name: "Blue", hex: "#3B82F6" },
-  { name: "Green", hex: "#10B981" },
+  { name: "Red Flexible", hex: "#B91C1C" },
+  { name: "Bicolor blue", hex: "#60A5FA" },
+  { name: "Transparent Flexible", hex: "#E5E7EB" },
   { name: "Yellow", hex: "#F59E0B" },
   { name: "Purple", hex: "#8B5CF6" },
   { name: "Pink", hex: "#EC4899" },
   { name: "Gray", hex: "#6B7280" },
-  { name: "Surprise Me!", hex: "#FF1493" },
+  { name: "Teal", hex: "#14B8A6" },
+  { name: "Lime", hex: "#84CC16" },
+  { name: "Cyan", hex: "#06B6D4" },
+  { name: "Indigo", hex: "#6366F1" },
+  { name: "Rainbow 🌈 (surprise me!)", hex: "#FF1493" },
+  { name: "Bambu Rainbow (Multicolour)", hex: "#A855F7" },
 ]
 
 export function AdminProductsClient({ initialProducts }: { initialProducts: Product[] }) {
