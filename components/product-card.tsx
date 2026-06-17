@@ -21,15 +21,22 @@ interface Product {
 
 const COLOR_HEX_MAP: Record<string, string> = {
   White: "#FFFFFF",
-  Black: "#000000",
-  Red: "#EF4444",
   Blue: "#3B82F6",
-  Green: "#10B981",
   Yellow: "#F59E0B",
-  "Surprise Me!": "#FF1493",
-  "Bi-Color Blue": "#0040e5",
-  "Rainbow": "#c2ff7e",
+  Purple: "#8B5CF6",
+  Pink: "#EC4899",
+  Gray: "#6B7280",
+  Teal: "#14B8A6",
+  Lime: "#84CC16",
+  Cyan: "#06B6D4",
+  Indigo: "#6366F1",
+  "Surprise me!": "#FF1493",
+  "Multicolour": "#A855F7",
+  "Red Flexible": "#B91C1C",
+  "Bicolor blue": "#60A5FA",
+  "Transparent Flexible": "#E5E7EB",
 }
+
 
 export function ProductCard({ product }: { product: Product }) {
   const { t } = useLanguage()
